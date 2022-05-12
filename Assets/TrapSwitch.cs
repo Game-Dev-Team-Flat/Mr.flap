@@ -15,7 +15,8 @@ public class TrapSwitch : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.layer == 7)
+        Debug.Log("Something Triggered");
+        if (other.gameObject.layer == 7)
         {
             Target.Activate_Trap();
             Debug.Log("Player Triggered");

@@ -1,7 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu]
-public class Knife : ScriptableObject
+public class Knife : MonoBehaviour
 {
     public float attackRate;
     public float range;

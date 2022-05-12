@@ -8,28 +8,36 @@ public class PlayerController : MonoBehaviour
     public float gravityDownForce;
 
     [Header("-HookShot")]
-    public float hookShotCoolTime;
-    private bool isHookShotReload = true;
-    public float hookShotSpeed;
+    public float hookShotMoveSpeedMin;
+    public float hookShotMoveSpeedMax;
+    private float hookShotSpeed;
     [SerializeField]
     private float hookShotLimitDistance;
+    public float hookShotCoolTime;
     [HideInInspector]
     public State state;
     private Ray mouseRay;
     private RaycastHit hitCollider;
+    private bool isHookShotReload = true;
+    [SerializeField]
+    private Transform hookshotTransform;
+    private float hookshotSize;
+    public float hookshotThrowSpeed;
 
     [Header("-Jump")]
     public float jumpForce;
     public int extraJumpCount;
     public float addExtraJumpCoolTime;
-    private bool isAddExtraJumpCoolTime = false;
-    private int jumpCount;
+    private bool isAddExtraJumpCoolTime;
+    public int jumpCount;
     private bool isJump = false;
 
     [Header("-Move")]
     public float moveSpeed;
     private Vector3 characterVelocity;
     private float characterVelocityY;
+    [SerializeField]
+    private float momentumExtraSpeed;
 
     [Header("-Dash")]
     public float dashSpeed;
@@ -41,6 +49,7 @@ public class PlayerController : MonoBehaviour
     public enum State
     {
         Normal,
+        HookShotThrown,
         HookShotFlyingPlayer,
         DashingPlayer,
         ChopDriver
@@ -50,6 +59,7 @@ public class PlayerController : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         state = State.Normal;
+        hookshotTransform.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -57,7 +67,13 @@ public class PlayerController : MonoBehaviour
         if (state == State.Normal)
         {
             PlayerMovement();
-            ShotHook();
+            HookShot();
+            CheckIpnutDashKeyCode();
+        }
+        if(state == State.HookShotThrown)
+        {
+            PlayerMovement();
+            HookshotThrow();
             CheckIpnutDashKeyCode();
         }
         if(state == State.HookShotFlyingPlayer)
@@ -74,6 +90,7 @@ public class PlayerController : MonoBehaviour
 
         }
     }
+
 
     private void PlayerMovement()
     {
@@ -99,27 +116,35 @@ public class PlayerController : MonoBehaviour
             characterVelocityY = 0f;
             isJump = false;
         }
-        else isJump = true;
+        else
+        {
+            if (jumpCount == 0) jumpCount = 1;
+            isJump = true;
+        }
 
-        if (Input.GetKeyDown(KeySetting.keys[KeyAction.Jump]) && (!isJump || jumpCount <= extraJumpCount))
+        if (Input.GetKeyDown(KeyCode.Space) && (!isJump || jumpCount <= extraJumpCount))
         {
             characterVelocityY = jumpForce;
-            jumpCount++;
 
-            ExtraJump();
+            jumpCount++;
         }
+        ExtraJump();
     }
 
     private void ExtraJump()
     {
-            if(jumpCount == extraJumpCount && !isAddExtraJumpCoolTime)
+        if (characterController.isGrounded)
+        {
+            StopCoroutine("AddExtraJump");
+            isAddExtraJumpCoolTime = false;
+        }
+        if (!isAddExtraJumpCoolTime)
+        {
+            if (jumpCount == (extraJumpCount + 1))
             {
-                StartCoroutine(AddExtraJump(addExtraJumpCoolTime));
+                StartCoroutine("AddExtraJump", addExtraJumpCoolTime);
             }
-            if(jumpCount != 0)
-            {
-                //splash white particles
-            }
+        }
     }
 
     private IEnumerator AddExtraJump(float _coolTime)
@@ -130,51 +155,68 @@ public class PlayerController : MonoBehaviour
             _coolTime -= Time.deltaTime;
             yield return new WaitForFixedUpdate();
         }
+        Debug.Log("Charged ExtraJump");
         jumpCount--;
         isAddExtraJumpCoolTime = false;
     }
 
-    private void ShotHook()
+
+    private void HookShot()
     {
-        if (Input.GetKeyDown(KeySetting.keys[KeyAction.ShotHock]) && isHookShotReload)
+        if (Input.GetMouseButtonDown(1) && isHookShotReload)
         {
             mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(mouseRay, out hitCollider, float.MaxValue))
             {
                 isHookShotReload = false;
-                state = State.HookShotFlyingPlayer;
-                characterVelocity.y = 0f;
+                hookshotSize = 0f;
+                hookshotTransform.gameObject.SetActive(true);
+                state = State.HookShotThrown;
                 StartCoroutine(HookReload(hookShotCoolTime));
             }
         }
     }
 
+    private void HookshotThrow()
+    {
+        hookshotTransform.LookAt(hitCollider.point);
+        hookshotSize += hookshotThrowSpeed * Time.deltaTime;
+        hookshotTransform.localScale = new Vector3(1, 1, hookshotSize);
+
+        if (hookshotSize >= Vector3.Distance(hookshotTransform.position, hitCollider.point))
+        {
+            state = State.HookShotFlyingPlayer;
+        }
+    }
+
     private void HookShotMovement()
     {
+        hookshotTransform.LookAt(hitCollider.point);
         Vector3 hookshotDir = (hitCollider.point - transform.position).normalized;
+        hookShotSpeed = hookShotMoveSpeedMax + hookShotMoveSpeedMin - Mathf.Clamp(Vector3.Distance(hitCollider.point, transform.position), hookShotMoveSpeedMin, hookShotMoveSpeedMax);
+        hookshotTransform.localScale = new Vector3(1, 1, Vector3.Distance(transform.position, hitCollider.point));
 
         characterController.Move(hookshotDir * hookShotSpeed * Time.deltaTime);
 
         if (Vector3.Distance(transform.position, hitCollider.point) < hookShotLimitDistance)
         {
             state = State.Normal;
-            characterVelocityY = 15f;
+            characterVelocityY = hookshotDir.y * hookShotSpeed * momentumExtraSpeed;
+            hookshotTransform.gameObject.SetActive(false);
         }
     }
+
     private IEnumerator HookReload(float _coolTime)
     {
-        while(_coolTime > 0)
-        {
-            _coolTime -= Time.deltaTime;
-            yield return new WaitForFixedUpdate();
-        }
+        yield return new WaitForSeconds(_coolTime);
         isHookShotReload = true;
         Debug.Log("Hook Reloaded");
     }
 
+
     private void CheckIpnutDashKeyCode()
     {
-        if (Input.GetKeyDown(KeySetting.keys[KeyAction.Dash]) && canDash)
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
         {
             dashBeforeState = state;
             state = State.DashingPlayer;
@@ -209,9 +251,11 @@ public class PlayerController : MonoBehaviour
         while (_durationTime > 0)
         {
             _durationTime -= Time.deltaTime;
+            hookshotTransform.LookAt(hitCollider.point);
             characterController.Move(_dashCharacterVelocity * Time.deltaTime);
             yield return new WaitForFixedUpdate();
         }
+        characterVelocityY = 0;
         state = dashBeforeState;
     }
 

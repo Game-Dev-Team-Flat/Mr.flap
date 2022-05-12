@@ -1,7 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu]
-public class Gun : ScriptableObject
+public class Gun : MonoBehaviour
 {
     public int maxAmmo;
     public int currentAmmo;

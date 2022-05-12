@@ -50,7 +50,7 @@ public class CameraController : MonoBehaviour
 
     private void FirstPerson()
     {
-        eyeOfObejct.transform.localPosition = firstPersonVector;
+        eyeOfObejct.GetComponentInChildren<Camera>().transform.localPosition = firstPersonVector;
 
         float xMouse = Input.GetAxis("Mouse X");
         float yMouse = Input.GetAxis("Mouse Y");

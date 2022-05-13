@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TrapSwitch : MonoBehaviour
+public class PlayerInTrigger : MonoBehaviour
 {
     [Header("-Trigger")]
-    public TrapController Target;
+    public Trigger_Receiver Target;
 
     // Start is called before the first frame update
     void Start()
@@ -18,7 +18,7 @@ public class TrapSwitch : MonoBehaviour
         Debug.Log("Something Triggered");
         if (other.gameObject.layer == 7)
         {
-            Target.Activate_Trap();
+            Target.OnReceivedTrigger();
             Debug.Log("Player Triggered");
         }
     }

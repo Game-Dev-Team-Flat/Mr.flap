@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 
 
-public class TrapController : MonoBehaviour
+public class TrapController : Trigger_Receiver
 {
     private TrapController trapController;
 
@@ -21,7 +21,12 @@ public class TrapController : MonoBehaviour
     private bool Is_Activated;
     private Vector3 Back_To;
     // Start is called before the first frame update
-    
+
+    public override void OnReceivedTrigger()
+    {
+        Activate_Trap();
+    }
+
     public void Activate_Trap()
     {
         Is_Activated = true;

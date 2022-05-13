@@ -49,6 +49,13 @@ public class PlayerController : MonoBehaviour
     private bool canDash = true;
     private State dashBeforeState;
 
+    [Header("-Dash")]
+    [SerializeField]
+    private float heightCanChopDriver;
+    private bool isChopDrive = false;
+    public float chopDriverCoolTime;
+    public float chopDriverForce;
+
     public enum State
     {
         Normal,
@@ -72,6 +79,7 @@ public class PlayerController : MonoBehaviour
             PlayerMovement();
             HookShot();
             CheckIpnutDashKeyCode();
+            CheckConditionOfChopDriver();
         }
         if(state == State.HookShotThrown)
         {
@@ -90,7 +98,7 @@ public class PlayerController : MonoBehaviour
         }
         if(state == State.ChopDriver)
         {
-
+            ChopDriver();
         }
     }
 
@@ -278,7 +286,6 @@ public class PlayerController : MonoBehaviour
         state = dashBeforeState;
     }
 
-
     private IEnumerator DashReload(float _coolTime)
     {
         while(_coolTime > 0)
@@ -288,5 +295,46 @@ public class PlayerController : MonoBehaviour
         }
         canDash = true;
         Debug.Log("Dash Reloaded");
+    }
+
+
+    private void CheckConditionOfChopDriver()
+    {
+        if (Physics.SphereCast(transform.position, characterController.radius, Vector3.down, out RaycastHit hitFloor, float.MaxValue, LayerMask.GetMask("Floor")))
+        {
+            if ((transform.position.y - hitFloor.point.y) > heightCanChopDriver)
+            {
+                Debug.Log("Can ChopDriver");
+                if(Input.GetKeyDown(KeyCode.Q) && !isChopDrive)
+                {
+                    characterVelocity = Vector3.up * -chopDriverForce;
+                    characterVelocityMomentum = Vector3.zero;
+                    state = State.ChopDriver;
+                }
+            }
+        }
+    }
+
+    private void ChopDriver()
+    {
+        characterVelocity.y -= gravityDownForce * Time.deltaTime;
+        characterController.Move(characterVelocity * Time.deltaTime);
+        if (characterController.isGrounded)
+        {
+            StartCoroutine(ReloadChopDriver(chopDriverCoolTime));
+            state = State.Normal;
+        }
+    }
+
+    private IEnumerator ReloadChopDriver(float _coolTime)
+    {
+        isChopDrive = true;
+        while (_coolTime > 0)
+        {
+            _coolTime -= Time.deltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+        isChopDrive = false;
+        Debug.Log("Reload ChopDriver");
     }
 }

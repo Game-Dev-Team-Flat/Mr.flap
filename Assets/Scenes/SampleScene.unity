@@ -1242,7 +1242,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bda7cb1a13552e845bb38305c9f20efb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravityDownForce: 40
+  gravityDownForce: 30
   hookShotMoveSpeedMin: 40
   hookShotMoveSpeedMax: 50
   hookShotLimitDistance: 1
@@ -1261,6 +1261,8 @@ MonoBehaviour:
   dashCoolTime: 3
   dashDurationTime: 0.4
   heightCanChopDriver: 5
+  chopDriverCoolTime: 8
+  chopDriverForce: 50
 --- !u!23 &1690056241
 MeshRenderer:
   m_ObjectHideFlags: 0

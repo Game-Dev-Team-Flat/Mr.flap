@@ -307,7 +307,7 @@ public class PlayerController : MonoBehaviour
                 Debug.Log("Can ChopDriver");
                 if(Input.GetKeyDown(KeyCode.Q) && !isChopDrive)
                 {
-                    characterVelocity = Vector3.up * -chopDriverForce;
+                    characterVelocity = Vector3.zero + Vector3.down * chopDriverForce;
                     characterVelocityMomentum = Vector3.zero;
                     state = State.ChopDriver;
                 }
@@ -317,7 +317,7 @@ public class PlayerController : MonoBehaviour
 
     private void ChopDriver()
     {
-        characterVelocity.y -= gravityDownForce * Time.deltaTime;
+        characterVelocity.y -= chopDriverForce * Time.deltaTime;
         characterController.Move(characterVelocity * Time.deltaTime);
         if (characterController.isGrounded)
         {

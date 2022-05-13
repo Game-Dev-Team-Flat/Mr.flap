@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+
 
 public class TrapController : MonoBehaviour
 {
@@ -14,6 +16,7 @@ public class TrapController : MonoBehaviour
     public float Back_time;
     public int Damage;
     public PlayerController DamageReceiver;
+
 
     private bool Is_Activated;
     private Vector3 Back_To;

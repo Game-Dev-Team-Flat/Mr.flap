@@ -27,7 +27,6 @@ public class TrapController : MonoBehaviour
         Is_Activated = true;
         Invoke("Move_Back", Back_time);
     }
-
     public void Move_Back()
     {
         Is_Activated = false;

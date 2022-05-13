@@ -36,6 +36,9 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed;
     private Vector3 characterVelocity;
     private float characterVelocityY;
+    private Vector3 characterVelocityMomentum;
+    [SerializeField]
+    private float momentumDrag;
     [SerializeField]
     private float momentumExtraSpeed;
 
@@ -105,7 +108,18 @@ public class PlayerController : MonoBehaviour
 
         characterVelocity.y = characterVelocityY;
 
+        characterVelocity += characterVelocityMomentum;
+
         characterController.Move(characterVelocity * Time.deltaTime);
+
+        if(characterVelocityMomentum.magnitude >= 0f)
+        {
+            characterVelocityMomentum -= characterVelocityMomentum * momentumDrag * Time.deltaTime;
+            if(characterVelocityMomentum.magnitude < 0f || characterController.isGrounded)
+            {
+                characterVelocityMomentum = Vector3.zero;
+            }
+        }
     }
 
     private void PlayerJump()
@@ -125,7 +139,6 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && (!isJump || jumpCount <= extraJumpCount))
         {
             characterVelocityY = jumpForce;
-
             jumpCount++;
         }
         ExtraJump();
@@ -198,10 +211,11 @@ public class PlayerController : MonoBehaviour
 
         characterController.Move(hookshotDir * hookShotSpeed * Time.deltaTime);
 
-        if (Vector3.Distance(transform.position, hitCollider.point) < hookShotLimitDistance)
+        if (Vector3.Distance(transform.position, hitCollider.point) < hookShotLimitDistance || StopHookshotMovement())
         {
             state = State.Normal;
-            characterVelocityY = hookshotDir.y * hookShotSpeed * momentumExtraSpeed;
+            characterVelocityY = 0f;
+            characterVelocityMomentum = Vector3.up * hookshotDir.y * hookShotSpeed * momentumExtraSpeed;
             hookshotTransform.gameObject.SetActive(false);
         }
     }
@@ -213,6 +227,10 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Hook Reloaded");
     }
 
+    private bool StopHookshotMovement()
+    {
+        return Input.GetMouseButtonDown(1);
+    }
 
     private void CheckIpnutDashKeyCode()
     {
@@ -256,6 +274,7 @@ public class PlayerController : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
         characterVelocityY = 0;
+        characterVelocityMomentum = Vector3.zero;
         state = dashBeforeState;
     }
 

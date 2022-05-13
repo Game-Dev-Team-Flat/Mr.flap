@@ -147,7 +147,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 64447124}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.4, y: -0.4, z: 0}
+  m_LocalPosition: {x: 0.3, y: -0.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1243,19 +1243,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravityDownForce: 40
-  hookShotMoveAcceleration: 10
-  hookShotMoveSpeedMin: 20
-  hookShotMoveSpeedMax: 100
+  hookShotMoveSpeedMin: 40
+  hookShotMoveSpeedMax: 50
   hookShotLimitDistance: 1
   hookShotCoolTime: 6
   state: 0
   hookshotTransform: {fileID: 64447125}
-  hookshotThrowSpeed: 70
+  hookshotThrowSpeed: 100
   jumpForce: 15
   extraJumpCount: 1
   addExtraJumpCoolTime: 3
   jumpCount: 0
   moveSpeed: 10
+  momentumDrag: 1
   momentumExtraSpeed: 1
   dashSpeed: 50
   dashCoolTime: 3
@@ -1280,7 +1280,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 81a52111c74e32b458f6c7b8944d4ea7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1581,7 +1581,7 @@ Transform:
   m_GameObject: {fileID: 2029067758}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0.5}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 1}
+  m_LocalScale: {x: 0.15, y: 0.15, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 64447125}

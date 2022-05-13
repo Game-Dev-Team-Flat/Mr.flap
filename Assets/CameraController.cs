@@ -68,6 +68,11 @@ public class CameraController : MonoBehaviour
     {
         eyeOfObejct.GetComponentInChildren<Camera>().transform.localPosition = thirdPersonVector;
 
+        if (Physics.Raycast(transform.position, -eyeOfObejct.transform.forward, out RaycastHit hitCollider, Vector3.Distance(thirdPersonVector, Vector3.zero), LayerMask.GetMask("Floor")))
+        {
+            eyeOfObejct.GetComponentInChildren<Camera>().transform.position = hitCollider.point + Vector3.up * thirdPersonVector.y;
+        }
+
         float xMouse = Input.GetAxis("Mouse X");
         float yMouse = Input.GetAxis("Mouse Y");
 

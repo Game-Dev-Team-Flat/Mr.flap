@@ -10,13 +10,15 @@ public class CameraController : MonoBehaviour
 {
     [SerializeField]
     private GameObject eyeOfObejct;
-    [SerializeField]
-    private Vector3 firstPersonVector;
-    [SerializeField]
-    private Vector3 thirdPersonVector;
     private float xRotate;
     private float yRotate;
     public float rotSpeed = 200;
+    [Header("-First Person")]
+    [SerializeField]
+    private Vector3 firstPersonVector;
+    [Header("-Third Person")]
+    [SerializeField]
+    private Vector3 thirdPersonVector;
 
     private void Awake()
     {
@@ -52,27 +54,27 @@ public class CameraController : MonoBehaviour
     {
         eyeOfObejct.GetComponentInChildren<Camera>().transform.localPosition = firstPersonVector;
 
-        float xMouse = Input.GetAxis("Mouse X");
-        float yMouse = Input.GetAxis("Mouse Y");
-
-        xRotate += rotSpeed * yMouse * Time.deltaTime;
-        yRotate += rotSpeed * xMouse * Time.deltaTime;
-
-        xRotate = Mathf.Clamp(xRotate, -80, 80);
-
-        eyeOfObejct.transform.eulerAngles = new Vector3(-xRotate, eyeOfObejct.transform.eulerAngles.y, 0);
-        transform.eulerAngles = new Vector3(0, yRotate, 0);
+        AimMovement();
     }
 
     private void ThirdPerson()
     {
-        eyeOfObejct.GetComponentInChildren<Camera>().transform.localPosition = thirdPersonVector;
-
-        if (Physics.Raycast(transform.position, -eyeOfObejct.transform.forward, out RaycastHit hitCollider, Vector3.Distance(thirdPersonVector, Vector3.zero), LayerMask.GetMask("Floor")))
+        if (Physics.Raycast(transform.position, -eyeOfObejct.transform.forward, out RaycastHit hitCollider, Vector3.Distance(thirdPersonVector, Vector3.zero) - 1, LayerMask.GetMask("Floor")))
         {
             eyeOfObejct.GetComponentInChildren<Camera>().transform.position = hitCollider.point + Vector3.up * thirdPersonVector.y;
         }
+        else
+        {
+            eyeOfObejct.GetComponentInChildren<Camera>().transform.position = Vector3.zero;
+            eyeOfObejct.GetComponentInChildren<Camera>().transform.localPosition = thirdPersonVector;
+        }
+        eyeOfObejct.GetComponentInChildren<Camera>().transform.Translate(-thirdPersonVector.normalized);
 
+    AimMovement();
+    }
+
+    private void AimMovement()
+    {
         float xMouse = Input.GetAxis("Mouse X");
         float yMouse = Input.GetAxis("Mouse Y");
 

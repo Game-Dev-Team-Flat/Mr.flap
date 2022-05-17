@@ -10,5 +10,9 @@ namespace Weapon
         public float reloadTime;
         public float range;
         public float damage;
+        public bool isAutomaticAttack;
+
+        [Header("-Audio")]
+        public AudioClip audioClipFire;
     }
 }

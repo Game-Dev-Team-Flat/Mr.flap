@@ -1206,11 +1206,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebacbaf6f5463a34aae39966b194f3fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioSource: {fileID: 0}
   eyesOfObject: {fileID: 1777088081}
-  target:
+  targetLayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   weapons:
+  - {fileID: 5618889962838469731, guid: 2d733e8851b79044683f6a33a24e7cfa, type: 3}
+  - {fileID: 5618889962838469731, guid: 2d733e8851b79044683f6a33a24e7cfa, type: 3}
   - {fileID: 5618889962838469731, guid: 2d733e8851b79044683f6a33a24e7cfa, type: 3}
   keyReload: 114
   slotNumber: 0
@@ -1227,9 +1230,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   eyeOfObejct: {fileID: 1777088081}
+  rotSpeed: 300
   firstPersonVector: {x: 0, y: 0, z: 0}
   thirdPersonVector: {x: 0, y: 1, z: -5}
-  rotSpeed: 300
 --- !u!114 &1690056240
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1242,27 +1245,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bda7cb1a13552e845bb38305c9f20efb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravityDownForce: 30
+  gravityDownForce: 35
   hookShotMoveSpeedMin: 40
   hookShotMoveSpeedMax: 50
-  hookShotLimitDistance: 1
-  hookShotCoolTime: 6
+  hookShotCoolTime: 1
   state: 0
   hookshotTransform: {fileID: 64447125}
   hookshotThrowSpeed: 100
+  minHookshotUpMomentum: 15
   jumpForce: 15
   extraJumpCount: 1
   addExtraJumpCoolTime: 3
-  jumpCount: 0
   moveSpeed: 10
   momentumDrag: 1
   momentumExtraSpeed: 1
   dashSpeed: 50
-  dashCoolTime: 3
+  dashCoolTime: 1
   dashDurationTime: 0.4
   heightCanChopDriver: 5
-  chopDriverCoolTime: 8
-  chopDriverForce: 50
+  chopDriverCoolTime: 1
+  chopDriverForce: 100
 --- !u!23 &1690056241
 MeshRenderer:
   m_ObjectHideFlags: 0

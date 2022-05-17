@@ -11,8 +11,6 @@ public class PlayerController : MonoBehaviour
     public float hookShotMoveSpeedMin;
     public float hookShotMoveSpeedMax;
     private float hookShotSpeed;
-    [SerializeField]
-    private float hookShotLimitDistance;
     public float hookShotCoolTime;
     [HideInInspector]
     public State state;
@@ -23,13 +21,15 @@ public class PlayerController : MonoBehaviour
     private Transform hookshotTransform;
     private float hookshotSize;
     public float hookshotThrowSpeed;
+    [SerializeField]
+    private float minHookshotUpMomentum;
 
     [Header("-Jump")]
     public float jumpForce;
     public int extraJumpCount;
     public float addExtraJumpCoolTime;
     private bool isAddExtraJumpCoolTime;
-    public int jumpCount;
+    private int jumpCount;
     private bool isJump = false;
 
     [Header("-Move")]
@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
     private bool canDash = true;
     private State dashBeforeState;
 
-    [Header("-Dash")]
+    [Header("-Chop Driver")]
     [SerializeField]
     private float heightCanChopDriver;
     private bool isChopDrive = false;
@@ -219,11 +219,12 @@ public class PlayerController : MonoBehaviour
 
         characterController.Move(hookshotDir * hookShotSpeed * Time.deltaTime);
 
+        float hookShotLimitDistance = 1f;
         if (Vector3.Distance(transform.position, hitCollider.point) < hookShotLimitDistance || StopHookshotMovement())
         {
-            state = State.Normal;
-            characterVelocityY = 0f;
-            characterVelocityMomentum = Vector3.up * hookshotDir.y * hookShotSpeed * momentumExtraSpeed;
+            ResetToNormalState();
+            float hookshotUpMomentum = hookshotDir.y * hookShotSpeed * momentumExtraSpeed;
+            characterVelocityMomentum = Vector3.up * (hookshotUpMomentum > minHookshotUpMomentum ? hookshotUpMomentum : minHookshotUpMomentum);
             hookshotTransform.gameObject.SetActive(false);
         }
     }
@@ -281,8 +282,8 @@ public class PlayerController : MonoBehaviour
             characterController.Move(_dashCharacterVelocity * Time.deltaTime);
             yield return new WaitForFixedUpdate();
         }
-        characterVelocityY = 0;
         characterVelocityMomentum = Vector3.zero;
+        characterVelocityY = 0;
         state = dashBeforeState;
     }
 
@@ -310,6 +311,7 @@ public class PlayerController : MonoBehaviour
                     characterVelocity = Vector3.zero + Vector3.down * chopDriverForce;
                     characterVelocityMomentum = Vector3.zero;
                     state = State.ChopDriver;
+                    characterVelocityY = 15f;
                 }
             }
         }
@@ -317,12 +319,19 @@ public class PlayerController : MonoBehaviour
 
     private void ChopDriver()
     {
-        characterVelocity.y -= chopDriverForce * Time.deltaTime;
+        if (characterVelocityY < 0)
+        {
+            characterVelocityY = -chopDriverForce;
+        }
+        else characterVelocityY -= gravityDownForce * Time.deltaTime;
+
+        characterVelocity.y = characterVelocityY;
         characterController.Move(characterVelocity * Time.deltaTime);
+
         if (characterController.isGrounded)
         {
             StartCoroutine(ReloadChopDriver(chopDriverCoolTime));
-            state = State.Normal;
+            ResetToNormalState();
         }
     }
 
@@ -336,5 +345,11 @@ public class PlayerController : MonoBehaviour
         }
         isChopDrive = false;
         Debug.Log("Reload ChopDriver");
+    }
+
+    private void ResetToNormalState()
+    {
+        characterVelocityY = 0;
+        state = State.Normal;
     }
 }

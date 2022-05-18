@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerInTrigger : MonoBehaviour
 {
     [Header("-Trigger")]
-    public Trigger_Receiver Target;
+    public Trigger_Receiver[] Targets;
 
     // Start is called before the first frame update
     void Start()
@@ -13,12 +13,12 @@ public class PlayerInTrigger : MonoBehaviour
         
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Something Triggered");
         if (other.gameObject.layer == 7)
         {
-            Target.OnReceivedTrigger();
+            foreach(var Target in Targets)
+                Target.OnReceivedTrigger();
             Debug.Log("Player Triggered");
         }
     }

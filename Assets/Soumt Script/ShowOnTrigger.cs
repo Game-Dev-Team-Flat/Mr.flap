@@ -9,6 +9,8 @@ public class ShowOnTrigger : Trigger_Receiver
     {
         showOnTrigger.gameObject.SetActive(true);
     }
+
+
     // Start is called before the first frame update
     void Start()
     {

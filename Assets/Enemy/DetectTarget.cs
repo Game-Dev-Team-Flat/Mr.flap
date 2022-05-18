@@ -14,8 +14,8 @@ public class DetectTarget : MonoBehaviour
 
     private void Update()
     {
-        Debug.DrawRay(transform.position, transform.forward * ( DetectionAngle / 2 * DetectionDistance));
-        Debug.DrawRay(transform.position, transform.forward * (-DetectionAngle / 2 * DetectionDistance));
+        Debug.DrawRay(transform.position, EulerToVector( DetectionAngle) / 2 * DetectionDistance);
+        Debug.DrawRay(transform.position, EulerToVector(-DetectionAngle) / 2 * DetectionDistance);
         SearchTarget(targetLayerMask);
     }
 

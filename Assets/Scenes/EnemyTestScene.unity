@@ -252,8 +252,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c374bdae6c0a3f24aa52f1bd429558c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DetectionAngle: 0
-  DetectionDistance: 0
+  DetectionAngle: 40
+  DetectionDistance: 40
   targetLayerMask:
     serializedVersion: 2
     m_Bits: 0

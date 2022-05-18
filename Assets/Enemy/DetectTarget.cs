@@ -14,8 +14,8 @@ public class DetectTarget : MonoBehaviour
 
     private void Update()
     {
-        Debug.DrawRay(transform.position, EulerToVector( DetectionAngle) / 2 * DetectionDistance);
-        Debug.DrawRay(transform.position, EulerToVector(-DetectionAngle) / 2 * DetectionDistance);
+        Debug.DrawRay(transform.position, EulerToVector( DetectionAngle / 2) * DetectionDistance);
+        Debug.DrawRay(transform.position, EulerToVector(-DetectionAngle / 2) * DetectionDistance);
         SearchTarget(targetLayerMask);
     }
 
@@ -31,9 +31,10 @@ public class DetectTarget : MonoBehaviour
 
             if (targetRadian > radianRange)
             {
+                Debug.DrawRay(transform.position, (objectsInOverlapSphere[i].transform.position - transform.position).normalized * DetectionDistance);
                 if(Physics.Raycast(transform.position, (objectsInOverlapSphere[i].transform.position - transform.position).normalized, out RaycastHit colliderHit, DetectionDistance))
                 {
-                    if (colliderHit.transform.tag == "Player")
+                    if (colliderHit.transform.gameObject.layer == 7)
                     {
                         Debug.Log("Detect Player!");
                     }

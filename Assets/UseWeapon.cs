@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Weapon
@@ -7,65 +6,70 @@ namespace Weapon
     public class UseWeapon : MonoBehaviour
     {
         [SerializeField]
+        protected AudioSource audioSource;
+
+        [SerializeField]
         private GameObject eyesOfObject;
-        [HideInInspector]
         protected RaycastHit collidertHit;
-        public LayerMask target;
+        public LayerMask targetLayerMask;
         private float lastFireTime;
-        private bool isReload = false;
-        private bool isFire = false;
-        public bool IsFire => isFire;
-        protected bool reload;
+        private bool _isReload = false;
+        protected bool isReload => _isReload;
+        protected bool inputReload;
         protected bool startFire;
         protected bool stopFire;
-        protected float Health { get; set; }
 
         protected void WeaponAction(Gun _gun)
         {
-            if (startFire)
+            if (!_isReload)
             {
-                isFire = true;
-                StartCoroutine(GunAction(_gun));
-            }
-            else if (stopFire)
-            {
-                isFire = false;
-            }
-            if (reload && !isReload)
-            {
-                StartCoroutine(OnReload(_gun));
+                if (startFire)
+                {
+                    StartCoroutine("GunAction", _gun);
+                }
+                else if (stopFire)
+                {
+                    StopCoroutine("GunAction");
+                }
+                if (inputReload)
+                {
+                    StartCoroutine(OnReload(_gun));
+                }
             }
         }
 
         protected void WeaponAction(Knife _knife)
         {
-            if (startFire)
+            if (Input.GetMouseButtonDown(0))
             {
-                isFire = true;
-                StartCoroutine(KnifeAction(_knife));
+                StartCoroutine("KnifeAction", _knife);
             }
-            else if (stopFire)
+            else if (Input.GetMouseButtonUp(0))
             {
-                isFire = false;
+
+                StopCoroutine("KnifeAction");
             }
         }
 
         private IEnumerator GunAction(Gun _gun)
         {
-            while (isFire && !isReload)
+            if (_gun.currentAmmo > 0)
             {
-                if (_gun.currentAmmo > 0)
+                if (_gun.isAutomaticAttack)
                 {
-                    Shot(_gun);
+                    while (true && _gun.currentAmmo > 0 && !_isReload)
+                    {
+                        Shot(_gun);
+                        yield return null;
+                    }
                 }
-                yield return null;
+                else Shot(_gun);
             }
-            yield return null;
         }
 
         private IEnumerator KnifeAction(Knife _knife)
         {
-            while (isFire)
+            while (true)
             {
                 Stab(_knife);
                 yield return null;
@@ -76,9 +80,11 @@ namespace Weapon
         {
             if (Time.time - lastFireTime > _gun.fireRate)
             {
+                Debug.Log("Fire");
                 _gun.currentAmmo--;
                 Hit(_gun.damage, _gun.range);
                 lastFireTime = Time.time;
+                PlaySound(_gun.audioClipFire);
             }
         }
 
@@ -86,6 +92,7 @@ namespace Weapon
         {
             if (Time.time - lastFireTime > _knife.attackRate)
             {
+                Debug.Log("Stab");
                 Hit(_knife.damage, _knife.range);
                 lastFireTime = Time.time;
             }
@@ -93,17 +100,15 @@ namespace Weapon
 
         private void Hit(float _damage, float _range)
         {
-            if (Physics.Raycast(eyesOfObject.transform.position, eyesOfObject.transform.forward, out collidertHit, _range, target))
+            if (Physics.Raycast(eyesOfObject.transform.position, eyesOfObject.transform.forward, out collidertHit, _range, targetLayerMask))
             {
-                Health -= _damage;
-                Debug.Log("take damage");
+                Debug.Log("Take Damage");
             }
-            else Debug.Log("miss");
         }
 
         private IEnumerator OnReload(Gun _gun)
         {
-            isReload = true;
+            _isReload = true;
             float _reloadTime = _gun.reloadTime;
             while (_reloadTime > 0)
             {
@@ -112,7 +117,14 @@ namespace Weapon
             }
             Debug.Log("Reload Complete");
             _gun.currentAmmo = _gun.maxAmmo;
-            isReload = false;
+            _isReload = false;
+        }
+
+        private void PlaySound(AudioClip clip)
+        {
+            audioSource.Stop();
+            audioSource.clip = clip;
+            audioSource.Play();
         }
     }
 }

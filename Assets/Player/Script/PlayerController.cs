@@ -11,8 +11,6 @@ public class PlayerController : MonoBehaviour
     public float hookShotMoveSpeedMin;
     public float hookShotMoveSpeedMax;
     private float hookShotSpeed;
-    [SerializeField]
-    private float hookShotLimitDistance;
     public float hookShotCoolTime;
     [HideInInspector]
     public State state;
@@ -23,19 +21,24 @@ public class PlayerController : MonoBehaviour
     private Transform hookshotTransform;
     private float hookshotSize;
     public float hookshotThrowSpeed;
+    [SerializeField]
+    private float minHookshotUpMomentum;
 
     [Header("-Jump")]
     public float jumpForce;
     public int extraJumpCount;
     public float addExtraJumpCoolTime;
     private bool isAddExtraJumpCoolTime;
-    public int jumpCount;
+    private int jumpCount;
     private bool isJump = false;
 
     [Header("-Move")]
     public float moveSpeed;
     private Vector3 characterVelocity;
     private float characterVelocityY;
+    private Vector3 characterVelocityMomentum;
+    [SerializeField]
+    private float momentumDrag;
     [SerializeField]
     private float momentumExtraSpeed;
 
@@ -45,6 +48,13 @@ public class PlayerController : MonoBehaviour
     public float dashDurationTime;
     private bool canDash = true;
     private State dashBeforeState;
+
+    [Header("-Chop Driver")]
+    [SerializeField]
+    private float heightCanChopDriver;
+    private bool isChopDrive = false;
+    public float chopDriverCoolTime;
+    public float chopDriverForce;
 
     public enum State
     {
@@ -69,6 +79,7 @@ public class PlayerController : MonoBehaviour
             PlayerMovement();
             HookShot();
             CheckIpnutDashKeyCode();
+            CheckConditionOfChopDriver();
         }
         if(state == State.HookShotThrown)
         {
@@ -87,7 +98,7 @@ public class PlayerController : MonoBehaviour
         }
         if(state == State.ChopDriver)
         {
-
+            ChopDriver();
         }
     }
 
@@ -105,7 +116,18 @@ public class PlayerController : MonoBehaviour
 
         characterVelocity.y = characterVelocityY;
 
+        characterVelocity += characterVelocityMomentum;
+
         characterController.Move(characterVelocity * Time.deltaTime);
+
+        if(characterVelocityMomentum.magnitude >= 0f)
+        {
+            characterVelocityMomentum -= characterVelocityMomentum * momentumDrag * Time.deltaTime;
+            if(characterVelocityMomentum.magnitude < 0f || characterController.isGrounded)
+            {
+                characterVelocityMomentum = Vector3.zero;
+            }
+        }
     }
 
     private void PlayerJump()
@@ -125,7 +147,6 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && (!isJump || jumpCount <= extraJumpCount))
         {
             characterVelocityY = jumpForce;
-
             jumpCount++;
         }
         ExtraJump();
@@ -198,10 +219,12 @@ public class PlayerController : MonoBehaviour
 
         characterController.Move(hookshotDir * hookShotSpeed * Time.deltaTime);
 
-        if (Vector3.Distance(transform.position, hitCollider.point) < hookShotLimitDistance)
+        float hookShotLimitDistance = 1f;
+        if (Vector3.Distance(transform.position, hitCollider.point) < hookShotLimitDistance || StopHookshotMovement())
         {
-            state = State.Normal;
-            characterVelocityY = hookshotDir.y * hookShotSpeed * momentumExtraSpeed;
+            ResetToNormalState();
+            float hookshotUpMomentum = hookshotDir.y * hookShotSpeed * momentumExtraSpeed;
+            characterVelocityMomentum = Vector3.up * (hookshotUpMomentum > minHookshotUpMomentum ? hookshotUpMomentum : minHookshotUpMomentum);
             hookshotTransform.gameObject.SetActive(false);
         }
     }
@@ -213,6 +236,10 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Hook Reloaded");
     }
 
+    private bool StopHookshotMovement()
+    {
+        return Input.GetMouseButtonDown(1);
+    }
 
     private void CheckIpnutDashKeyCode()
     {
@@ -255,10 +282,10 @@ public class PlayerController : MonoBehaviour
             characterController.Move(_dashCharacterVelocity * Time.deltaTime);
             yield return new WaitForFixedUpdate();
         }
+        characterVelocityMomentum = Vector3.zero;
         characterVelocityY = 0;
         state = dashBeforeState;
     }
-
 
     private IEnumerator DashReload(float _coolTime)
     {
@@ -269,5 +296,60 @@ public class PlayerController : MonoBehaviour
         }
         canDash = true;
         Debug.Log("Dash Reloaded");
+    }
+
+
+    private void CheckConditionOfChopDriver()
+    {
+        if (Physics.SphereCast(transform.position, characterController.radius, Vector3.down, out RaycastHit hitFloor, float.MaxValue, LayerMask.GetMask("Floor")))
+        {
+            if ((transform.position.y - hitFloor.point.y) > heightCanChopDriver)
+            {
+                Debug.Log("Can ChopDriver");
+                if(Input.GetKeyDown(KeyCode.Q) && !isChopDrive)
+                {
+                    characterVelocity = Vector3.zero + Vector3.down * chopDriverForce;
+                    characterVelocityMomentum = Vector3.zero;
+                    state = State.ChopDriver;
+                    characterVelocityY = 15f;
+                }
+            }
+        }
+    }
+
+    private void ChopDriver()
+    {
+        if (characterVelocityY < 0)
+        {
+            characterVelocityY = -chopDriverForce;
+        }
+        else characterVelocityY -= gravityDownForce * Time.deltaTime;
+
+        characterVelocity.y = characterVelocityY;
+        characterController.Move(characterVelocity * Time.deltaTime);
+
+        if (characterController.isGrounded)
+        {
+            StartCoroutine(ReloadChopDriver(chopDriverCoolTime));
+            ResetToNormalState();
+        }
+    }
+
+    private IEnumerator ReloadChopDriver(float _coolTime)
+    {
+        isChopDrive = true;
+        while (_coolTime > 0)
+        {
+            _coolTime -= Time.deltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+        isChopDrive = false;
+        Debug.Log("Reload ChopDriver");
+    }
+
+    private void ResetToNormalState()
+    {
+        characterVelocityY = 0;
+        state = State.Normal;
     }
 }

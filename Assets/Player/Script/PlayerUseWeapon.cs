@@ -11,12 +11,12 @@ public class PlayerUseWeapon : UseWeapon
     [Space(10)]
     [SerializeField]
     private KeyCode keyReload;
-    [SerializeField]private int slotNumber;
+    [SerializeField]
+    private int slotNumber;
 
     private void Update()
     {
-        Health = 0;
-        reload = Input.GetKeyDown(keyReload);
+        inputReload = Input.GetKeyDown(keyReload);
         SwapWeapon();
 
         startFire = Input.GetMouseButtonDown(0);
@@ -28,12 +28,17 @@ public class PlayerUseWeapon : UseWeapon
 
     private void SwapWeapon()
     {
-        if (!IsFire)
+        if (!isReload)
         {
-            slotNumber += (int)Input.GetAxisRaw("Mouse ScrollWheel");
+            if (Input.GetAxisRaw("Mouse ScrollWheel") > 0) slotNumber++;
+            if (Input.GetAxisRaw("Mouse ScrollWheel") < 0) slotNumber--; // 휠로 슬롯 변경
+
+            if (slotNumber >= weapons.Length) slotNumber = 0;
+            else if (slotNumber < 0) slotNumber = weapons.Length - 1; // 슬롯 제한
+
             for (int i = 0; i < weapons.Length; i++)
             {
-                if (Input.GetKeyDown((KeyCode)(48 + i))) slotNumber = i - 1;
+                if (Input.GetKeyDown((KeyCode)(48 + i))) slotNumber = i - 1; // alpha Number로 슬롯 변경
             }
         }
     }

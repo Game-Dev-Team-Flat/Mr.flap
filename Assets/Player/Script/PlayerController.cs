@@ -187,7 +187,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetMouseButtonDown(1) && isHookShotReload)
         {
             mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(mouseRay, out hitCollider, float.MaxValue))
+            if (Physics.Raycast(mouseRay, out hitCollider, float.MaxValue, LayerMask.GetMask("Floor")))
             {
                 isHookShotReload = false;
                 hookshotSize = 0f;

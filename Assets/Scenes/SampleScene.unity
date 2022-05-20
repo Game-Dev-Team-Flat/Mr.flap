@@ -1239,5 +1239,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 3300005494099119092, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
+      propertyPath: cameraBackDistance
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3300005494099119093, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
+      propertyPath: keyReload
+      value: 114
+      objectReference: {fileID: 0}
+    - target: {fileID: 3300005494099119093, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
+      propertyPath: targetLayerMask.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShowOnTrigger : Trigger_Receiver
+public class ShowOnTrigger : TriggerReceiver
 {
     private ShowOnTrigger showOnTrigger;
     public override void OnReceivedTrigger()

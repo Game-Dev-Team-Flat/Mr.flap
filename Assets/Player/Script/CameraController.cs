@@ -13,12 +13,16 @@ public class CameraController : MonoBehaviour
     private float xRotate;
     private float yRotate;
     public float rotSpeed = 200;
+
     [Header("-First Person")]
     [SerializeField]
     private Vector3 firstPersonVector;
+
     [Header("-Third Person")]
     [SerializeField]
     private Vector3 thirdPersonVector;
+    [SerializeField]
+    private float cameraBackDistance;
 
     private void Awake()
     {
@@ -59,16 +63,16 @@ public class CameraController : MonoBehaviour
 
     private void ThirdPerson()
     {
-        if (Physics.Raycast(transform.position, -eyeOfObejct.transform.forward, out RaycastHit hitCollider, Vector3.Distance(thirdPersonVector, Vector3.zero) - 1, LayerMask.GetMask("Floor")))
+        if (Physics.Raycast(transform.position + Vector3.up * thirdPersonVector.y, -eyeOfObejct.transform.forward, out RaycastHit hitCollider, Vector3.Distance(thirdPersonVector, Vector3.zero), LayerMask.GetMask("Floor")))
         {
-            eyeOfObejct.GetComponentInChildren<Camera>().transform.position = hitCollider.point + Vector3.up * thirdPersonVector.y;
+            eyeOfObejct.GetComponentInChildren<Camera>().transform.position = hitCollider.point;
         }
         else
         {
             eyeOfObejct.GetComponentInChildren<Camera>().transform.position = Vector3.zero;
             eyeOfObejct.GetComponentInChildren<Camera>().transform.localPosition = thirdPersonVector;
         }
-        eyeOfObejct.GetComponentInChildren<Camera>().transform.Translate(-thirdPersonVector.normalized);
+        eyeOfObejct.GetComponentInChildren<Camera>().transform.Translate(-thirdPersonVector.normalized * cameraBackDistance);
 
     AimMovement();
     }

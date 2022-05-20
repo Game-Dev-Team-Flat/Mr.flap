@@ -14,9 +14,13 @@ public class DetectTarget : MonoBehaviour
 
     private void Update()
     {
-        Debug.DrawRay(transform.position, EulerToVector( DetectionAngle / 2) * DetectionDistance);
-        Debug.DrawRay(transform.position, EulerToVector(-DetectionAngle / 2) * DetectionDistance);
         SearchTarget(targetLayerMask);
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawRay(transform.position, EulerToVector( DetectionAngle / 2) * DetectionDistance);
+        Gizmos.DrawRay(transform.position, EulerToVector(-DetectionAngle / 2) * DetectionDistance);
     }
 
     private void SearchTarget(LayerMask _targetLayerMask)

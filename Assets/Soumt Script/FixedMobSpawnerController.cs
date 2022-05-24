@@ -8,7 +8,7 @@ public class FixedMobSpawnerController : TriggerReceiver
     // Start is called before the first frame update
     public override void OnReceivedTrigger()
     {
-        Instantiate(mobPrefab, spawnerController.transform.position, Quaternion.identity);
+        Invoke("SpawnMob", delay);
     }
 
     [Header("-MobSpawner")]
@@ -17,6 +17,19 @@ public class FixedMobSpawnerController : TriggerReceiver
 
     private bool canSpawn = true;
 
+    public void MakeToCanSpawan()
+    {
+        canSpawn = true;
+    }
+    private void SpawnMob()
+    {
+        if (canSpawn)
+        {
+            Instantiate(mobPrefab, spawnerController.transform.position, Quaternion.identity);
+            canSpawn = false;
+        }
+    }
+
     void Start()
     {
         spawnerController = GetComponent<FixedMobSpawnerController>();
@@ -24,9 +37,4 @@ public class FixedMobSpawnerController : TriggerReceiver
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

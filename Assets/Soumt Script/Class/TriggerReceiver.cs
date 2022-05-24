@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-public class Trigger_Receiver : MonoBehaviour
+public class TriggerReceiver : MonoBehaviour
 {
     public virtual void OnReceivedTrigger()
     {

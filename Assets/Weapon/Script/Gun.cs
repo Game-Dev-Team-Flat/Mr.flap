@@ -1,18 +1,29 @@
+using System;
 using UnityEngine;
 
 namespace Weapon
 {
     public class Gun : MonoBehaviour
     {
+        [Header("-Audio")]
+        //public AudioClip audioClipFire;
+
+        [Header("-Public Gun setting")]
         public int maxAmmo;
         public int currentAmmo;
         public float fireRate;
         public float reloadTime;
         public float range;
         public float damage;
-        public bool isAutomaticAttack;
+        [EnumFlags]
+        public ShotMode shotMode;
+        public ShotMode currentShotMode;
 
-        [Header("-Audio")]
-        public AudioClip audioClipFire;
+        public enum ShotMode
+        {
+            Semiauto = 1,
+            Auto = 2,
+            Burst = 4
+        }
     }
 }

@@ -9,9 +9,10 @@ namespace Weapon
         protected AudioSource audioSource;
 
         [SerializeField]
-        private GameObject eyesOfObject;
+        protected GameObject eyesOfObject;
         protected RaycastHit collidertHit;
-        public LayerMask targetLayerMask;
+        [SerializeField]
+        private LayerMask targetLayerMask;
         private float lastFireTime;
         private bool _isReload = false;
         protected bool isReload => _isReload;
@@ -42,7 +43,7 @@ namespace Weapon
         {
             if (Input.GetMouseButtonDown(0))
             {
-                StartCoroutine("KnifeAction", _knife);
+                StartCoroutine("KnifeAction");
             }
             else if (Input.GetMouseButtonUp(0))
             {
@@ -55,15 +56,29 @@ namespace Weapon
         {
             if (_gun.currentAmmo > 0)
             {
-                if (_gun.isAutomaticAttack)
+                switch (_gun.currentShotMode)
                 {
-                    while (true && _gun.currentAmmo > 0 && !_isReload)
-                    {
+                    case Gun.ShotMode.Auto:
+                        while (_gun.currentAmmo > 0 && !_isReload)
+                        {
+                            Shot(_gun);
+                            yield return null;
+                        }
+                        break;
+                    case Gun.ShotMode.Burst:
+                        int theNumberOfFire = 0;
+                        while (_gun.currentAmmo > 0 && !_isReload && theNumberOfFire < 3)
+                        {
+                            Shot(_gun);
+                            theNumberOfFire++;
+                            yield return null;
+                        }
+                        break;
+                    case Gun.ShotMode.Semiauto:
                         Shot(_gun);
                         yield return null;
-                    }
+                        break;
                 }
-                else Shot(_gun);
             }
         }
 
@@ -78,13 +93,13 @@ namespace Weapon
 
         private void Shot(Gun _gun)
         {
-            if (Time.time - lastFireTime > _gun.fireRate)
+            if (Time.time - lastFireTime > 1 / _gun.fireRate)
             {
                 Debug.Log("Fire");
                 _gun.currentAmmo--;
                 Hit(_gun.damage, _gun.range);
                 lastFireTime = Time.time;
-                PlaySound(_gun.audioClipFire);
+                //PlaySound(_gun.audioClipFire);
             }
         }
 
@@ -119,11 +134,16 @@ namespace Weapon
             _gun.currentAmmo = _gun.maxAmmo;
             _isReload = false;
         }
+        /*
+        private IEnumerator OnCharge(ChargingGun _chargingGun)
+        {
 
-        private void PlaySound(AudioClip clip)
+        }*/
+
+        private void PlaySound(AudioClip _clip)
         {
             audioSource.Stop();
-            audioSource.clip = clip;
+            audioSource.clip = _clip;
             audioSource.Play();
         }
     }

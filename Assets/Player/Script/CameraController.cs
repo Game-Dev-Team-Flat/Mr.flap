@@ -2,9 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Person { FirstPerson, ThirdPerson }
-
-public static class PersonSetting { public static Person person = Person.FirstPerson; }
 
 public class CameraController : MonoBehaviour
 {
@@ -13,6 +10,8 @@ public class CameraController : MonoBehaviour
     private float xRotate;
     private float yRotate;
     public float rotSpeed = 200;
+
+    private Person person = Person.FirstPerson;
 
     [Header("-First Person")]
     [SerializeField]
@@ -23,6 +22,8 @@ public class CameraController : MonoBehaviour
     private Vector3 thirdPersonVector;
     [SerializeField]
     private float cameraBackDistance;
+
+    private enum Person { FirstPerson, ThirdPerson }
 
     private void Awake()
     {
@@ -41,14 +42,14 @@ public class CameraController : MonoBehaviour
             Cursor.lockState = CursorLockMode.Locked;
         }
 
-        if (Input.GetKeyDown(KeyCode.N)) PersonSetting.person = Person.FirstPerson;
-        if (Input.GetKeyDown(KeyCode.M)) PersonSetting.person = Person.ThirdPerson;
+        if (Input.GetKeyDown(KeyCode.N)) person = Person.FirstPerson;
+        if (Input.GetKeyDown(KeyCode.M)) person = Person.ThirdPerson;
 
-        if (PersonSetting.person == Person.FirstPerson)
+        if (person == Person.FirstPerson)
         {
             FirstPerson();
         }
-        else if(PersonSetting.person == Person.ThirdPerson)
+        else if(person == Person.ThirdPerson)
         {
             ThirdPerson();
         }

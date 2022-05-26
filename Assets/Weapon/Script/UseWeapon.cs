@@ -9,19 +9,20 @@ namespace Weapon
         protected AudioSource audioSource;
 
         [SerializeField]
-        private GameObject eyesOfObject;
-        protected RaycastHit collidertHit;
-        public LayerMask targetLayerMask;
+        protected GameObject eyesOfObject;
+        private RaycastHit m_collidertHit;
+        public RaycastHit colliderHit => m_collidertHit;
+        [SerializeField]
+        private LayerMask targetLayerMask;
         private float lastFireTime;
-        private bool _isReload = false;
-        protected bool isReload => _isReload;
+        protected bool isReload = false;
         protected bool inputReload;
         protected bool startFire;
         protected bool stopFire;
 
         protected void WeaponAction(Gun _gun)
         {
-            if (!_isReload)
+            if (!isReload)
             {
                 if (startFire)
                 {
@@ -33,18 +34,18 @@ namespace Weapon
                 }
                 if (inputReload)
                 {
-                    StartCoroutine(OnReload(_gun));
+                    StartCoroutine("OnReload", _gun);
                 }
             }
         }
 
         protected void WeaponAction(Knife _knife)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (startFire)
             {
-                StartCoroutine("KnifeAction", _knife);
+                StartCoroutine("KnifeAction");
             }
-            else if (Input.GetMouseButtonUp(0))
+            else if (stopFire)
             {
 
                 StopCoroutine("KnifeAction");
@@ -55,15 +56,33 @@ namespace Weapon
         {
             if (_gun.currentAmmo > 0)
             {
-                if (_gun.isAutomaticAttack)
+                switch (_gun.currentShotMode)
                 {
-                    while (true && _gun.currentAmmo > 0 && !_isReload)
-                    {
+                    case Gun.ShotMode.Auto:
+                        while (_gun.currentAmmo > 0 && !isReload)
+                        {
+                            Shot(_gun);
+                            yield return null;
+                        }
+                        break;
+                    case Gun.ShotMode.Burst:
+                        int theNumberOfFire = 0;
+                        while (_gun.currentAmmo > 0 && !isReload && theNumberOfFire < 3)
+                        {
+                            Shot(_gun);
+                            theNumberOfFire++;
+                            yield return null;
+                        }
+                        break;
+                    case Gun.ShotMode.Semiauto:
                         Shot(_gun);
                         yield return null;
-                    }
+                        break;
                 }
-                else Shot(_gun);
+            }
+            if (_gun.autoReload && _gun.currentAmmo <= 0)
+            {
+                StartCoroutine("OnReload", _gun);
             }
         }
 
@@ -78,13 +97,13 @@ namespace Weapon
 
         private void Shot(Gun _gun)
         {
-            if (Time.time - lastFireTime > _gun.fireRate)
+            if (Time.time - lastFireTime > 1 / _gun.fireRate)
             {
                 Debug.Log("Fire");
                 _gun.currentAmmo--;
                 Hit(_gun.damage, _gun.range);
                 lastFireTime = Time.time;
-                PlaySound(_gun.audioClipFire);
+                //PlaySound(_gun.audioClipFire);
             }
         }
 
@@ -100,15 +119,15 @@ namespace Weapon
 
         private void Hit(float _damage, float _range)
         {
-            if (Physics.Raycast(eyesOfObject.transform.position, eyesOfObject.transform.forward, out collidertHit, _range, targetLayerMask))
+            if (Physics.Raycast(eyesOfObject.transform.position, eyesOfObject.transform.forward, out m_collidertHit, _range, targetLayerMask))
             {
                 Debug.Log("Take Damage");
             }
         }
 
-        private IEnumerator OnReload(Gun _gun)
+        protected IEnumerator OnReload(Gun _gun)
         {
-            _isReload = true;
+            isReload = true;
             float _reloadTime = _gun.reloadTime;
             while (_reloadTime > 0)
             {
@@ -117,13 +136,13 @@ namespace Weapon
             }
             Debug.Log("Reload Complete");
             _gun.currentAmmo = _gun.maxAmmo;
-            _isReload = false;
+            isReload = false;
         }
 
-        private void PlaySound(AudioClip clip)
+        private void PlaySound(AudioClip _clip)
         {
             audioSource.Stop();
-            audioSource.clip = clip;
+            audioSource.clip = _clip;
             audioSource.Play();
         }
     }

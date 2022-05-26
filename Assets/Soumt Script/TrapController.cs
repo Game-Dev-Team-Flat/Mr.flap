@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 
 
-public class TrapController : Trigger_Receiver
+public class TrapController : TriggerReceiver
 {
     private TrapController trapController;
 

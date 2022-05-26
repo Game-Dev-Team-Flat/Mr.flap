@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShowOnTrigger : Trigger_Receiver
+public class ShowOnTrigger : TriggerReceiver
 {
     private ShowOnTrigger showOnTrigger;
     public override void OnReceivedTrigger()
@@ -16,11 +16,5 @@ public class ShowOnTrigger : Trigger_Receiver
     {
         showOnTrigger = GetComponent<ShowOnTrigger>();
         showOnTrigger.gameObject.SetActive(false);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

@@ -1239,6 +1239,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 3300005494099119088, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 3300005494099119092, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
       propertyPath: cameraBackDistance
       value: 0.5
@@ -1257,7 +1261,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3300005494099119093, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
       propertyPath: weapons.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3300005494099119093, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
       propertyPath: m_weapons.Array.size
@@ -1265,6 +1269,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3300005494099119093, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
       propertyPath: weapons.Array.data[1]
+      value: 
+      objectReference: {fileID: 41958176849725547, guid: 2b8e8abc4b70fd746a28197dda5919b5, type: 3}
+    - target: {fileID: 3300005494099119093, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
+      propertyPath: weapons.Array.data[2]
       value: 
       objectReference: {fileID: 41958176849725547, guid: 7d9e92b00c054ae43aeb340151173abd, type: 3}
     - target: {fileID: 3300005494099119093, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}

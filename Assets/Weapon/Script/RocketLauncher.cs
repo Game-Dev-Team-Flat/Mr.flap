@@ -4,8 +4,7 @@ namespace Weapon
 {
     public class RocketLauncher : Gun
     {
-        [Header("-Roket Gun setting")]
-        public float roketSpeed;
-        public float explosionRange;
+        [Header("-Rocket Gun setting")]
+        public GameObject rocket;
     }
 }

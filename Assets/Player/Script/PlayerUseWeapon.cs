@@ -16,12 +16,11 @@ public class PlayerUseWeapon : UseWeapon
     private KeyCode changeShotModeKey;
     [SerializeField]
     private int slotNumber;
-    private float chargingTime;
     private bool isCharged = false;
 
     private void Awake()
     {
-        weapon = Instantiate(weapons[slotNumber], eyesOfObject.transform.position + transform.forward * 0.5f + transform.up * -0.3f + transform.right * 0.3f, transform.rotation, eyesOfObject.transform);
+        weapon = Instantiate(weapons[slotNumber], transform.position + eyesOfObject.transform.forward * 0.5f + eyesOfObject.transform.up * -0.3f + eyesOfObject.transform.right * 0.3f, eyesOfObject.transform.rotation, eyesOfObject.transform);
     }
 
     private void Update()
@@ -32,30 +31,31 @@ public class PlayerUseWeapon : UseWeapon
 
         startFire = ActiveStartFire(weapons[slotNumber]);
         stopFire  = ActiveStopFire(weapons[slotNumber]);
+        if (weapons[slotNumber].TryGetComponent(out RocketLauncher rocketLauncher) && rocketLauncher.currentAmmo > 0 && startFire)
+        {
+            Instantiate(rocketLauncher.rocket, eyesOfObject.transform.position + eyesOfObject.transform.forward * 1f + eyesOfObject.transform.up * -0.3f + eyesOfObject.transform.right * 0.3f, eyesOfObject.transform.rotation);
+        }
         if (weapons[slotNumber].TryGetComponent(out Knife knife)) WeaponAction(knife);
         else if (weapons[slotNumber].TryGetComponent(out Gun gun)) WeaponAction(gun);
     }
 
     private void SwapWeapon()
     {
-        if (!isReload)
+        int defaultSlotNumber = slotNumber;
+        if (Input.GetAxisRaw("Mouse ScrollWheel") > 0) slotNumber++;
+        if (Input.GetAxisRaw("Mouse ScrollWheel") < 0) slotNumber--; // 휠로 슬롯 변경
+
+        for (int i = 0; i < weapons.Count; i++)
         {
-            int defaultSlotNumber = slotNumber;
-            if (Input.GetAxisRaw("Mouse ScrollWheel") > 0) slotNumber++;
-            if (Input.GetAxisRaw("Mouse ScrollWheel") < 0) slotNumber--; // 휠로 슬롯 변경
+            if (Input.GetKeyDown((KeyCode)(49 + i))) slotNumber = i; // alpha Number로 슬롯 변경
+        }
 
-            for (int i = 0; i < weapons.Count; i++)
-            {
-                if (Input.GetKeyDown((KeyCode)(49 + i))) slotNumber = i; // alpha Number로 슬롯 변경
-            }
+        if (slotNumber >= weapons.Count) slotNumber = 0;
+        else if (slotNumber < 0) slotNumber = weapons.Count - 1; // 슬롯 제한
 
-            if (slotNumber >= weapons.Count) slotNumber = 0;
-            else if (slotNumber < 0) slotNumber = weapons.Count - 1; // 슬롯 제한
-
-            if (slotNumber != defaultSlotNumber) // 슬롯 변경됐을 때
-            {
-                DestroyAndInstantiateWeapon(weapons[slotNumber]); // 기존 무기를 제거하고 Slot Number에 맞는 무기 소환
-            }
+        if (slotNumber != defaultSlotNumber) // 슬롯 변경됐을 때
+        {
+            DestroyAndInstantiateWeapon(); // 기존 무기를 제거하고 Slot Number에 맞는 무기 소환
         }
     }
 
@@ -81,10 +81,11 @@ public class PlayerUseWeapon : UseWeapon
         }
     }
 
-    private void DestroyAndInstantiateWeapon(GameObject _weapon)
+    private void DestroyAndInstantiateWeapon()
     {
+        StopCoroutine("OnReload");
         Destroy(weapon);
-        weapon = Instantiate(weapons[slotNumber], eyesOfObject.transform.position + transform.forward * 0.5f + transform.up * -0.3f + transform.right * 0.3f, transform.rotation, eyesOfObject.transform);
+        weapon = Instantiate(weapons[slotNumber], transform.position + eyesOfObject.transform.forward * 0.5f + eyesOfObject.transform.up * -0.3f + eyesOfObject.transform.right * 0.3f, eyesOfObject.transform.rotation, eyesOfObject.transform);
     }
 
     private bool ActiveStartFire(GameObject _weapon)
@@ -96,7 +97,7 @@ public class PlayerUseWeapon : UseWeapon
                 StartCoroutine("Charging", _chargingGun.chargeTime);
             }
 
-            if (Input.GetMouseButton(0) || Input.GetMouseButtonUp(0))
+            if ((Input.GetMouseButton(0) || Input.GetMouseButtonUp(0)) && !isReload)
             {
                 if (isCharged)
                 {
@@ -119,7 +120,6 @@ public class PlayerUseWeapon : UseWeapon
             {
                 StopCoroutine("Charging");
                 isCharged = false;
-                chargingTime = 0;
                 return false;
             }
         }

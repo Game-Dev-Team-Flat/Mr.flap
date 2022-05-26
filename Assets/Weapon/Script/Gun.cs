@@ -13,6 +13,7 @@ namespace Weapon
         public int currentAmmo;
         public float fireRate;
         public float reloadTime;
+        public bool autoReload = false;
         public float range;
         public float damage;
         [EnumFlags]

@@ -10,19 +10,20 @@ namespace Weapon
 
         [SerializeField]
         protected GameObject eyesOfObject;
-        protected RaycastHit collidertHit;
+        private RaycastHit m_collidertHit;
+        public RaycastHit colliderHit => m_collidertHit;
         [SerializeField]
         private LayerMask targetLayerMask;
         private float lastFireTime;
-        private bool _isReload = false;
-        protected bool isReload => _isReload;
+        private bool m_isReload = false;
+        protected bool isReload => m_isReload;
         protected bool inputReload;
         protected bool startFire;
         protected bool stopFire;
 
         protected void WeaponAction(Gun _gun)
         {
-            if (!_isReload)
+            if (!m_isReload)
             {
                 if (startFire)
                 {
@@ -34,18 +35,18 @@ namespace Weapon
                 }
                 if (inputReload)
                 {
-                    StartCoroutine(OnReload(_gun));
+                    StartCoroutine("OnReload", _gun);
                 }
             }
         }
 
         protected void WeaponAction(Knife _knife)
         {
-            if (Input.GetMouseButtonDown(0))
+            if (startFire)
             {
                 StartCoroutine("KnifeAction");
             }
-            else if (Input.GetMouseButtonUp(0))
+            else if (stopFire)
             {
 
                 StopCoroutine("KnifeAction");
@@ -59,7 +60,7 @@ namespace Weapon
                 switch (_gun.currentShotMode)
                 {
                     case Gun.ShotMode.Auto:
-                        while (_gun.currentAmmo > 0 && !_isReload)
+                        while (_gun.currentAmmo > 0 && !m_isReload)
                         {
                             Shot(_gun);
                             yield return null;
@@ -67,7 +68,7 @@ namespace Weapon
                         break;
                     case Gun.ShotMode.Burst:
                         int theNumberOfFire = 0;
-                        while (_gun.currentAmmo > 0 && !_isReload && theNumberOfFire < 3)
+                        while (_gun.currentAmmo > 0 && !m_isReload && theNumberOfFire < 3)
                         {
                             Shot(_gun);
                             theNumberOfFire++;
@@ -79,6 +80,10 @@ namespace Weapon
                         yield return null;
                         break;
                 }
+            }
+            if (_gun.autoReload && _gun.currentAmmo <= 0)
+            {
+                StartCoroutine("OnReload", _gun);
             }
         }
 
@@ -115,15 +120,15 @@ namespace Weapon
 
         private void Hit(float _damage, float _range)
         {
-            if (Physics.Raycast(eyesOfObject.transform.position, eyesOfObject.transform.forward, out collidertHit, _range, targetLayerMask))
+            if (Physics.Raycast(eyesOfObject.transform.position, eyesOfObject.transform.forward, out m_collidertHit, _range, targetLayerMask))
             {
                 Debug.Log("Take Damage");
             }
         }
 
-        private IEnumerator OnReload(Gun _gun)
+        protected IEnumerator OnReload(Gun _gun)
         {
-            _isReload = true;
+            m_isReload = true;
             float _reloadTime = _gun.reloadTime;
             while (_reloadTime > 0)
             {
@@ -132,13 +137,8 @@ namespace Weapon
             }
             Debug.Log("Reload Complete");
             _gun.currentAmmo = _gun.maxAmmo;
-            _isReload = false;
+            m_isReload = false;
         }
-        /*
-        private IEnumerator OnCharge(ChargingGun _chargingGun)
-        {
-
-        }*/
 
         private void PlaySound(AudioClip _clip)
         {

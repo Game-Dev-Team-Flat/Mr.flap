@@ -272,7 +272,7 @@ MonoBehaviour:
   eyesOfObject: {fileID: 3300005494320368522}
   targetLayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 320
   weapons:
   - {fileID: 5618889962838469731, guid: 2d733e8851b79044683f6a33a24e7cfa, type: 3}
   reloadKey: 114

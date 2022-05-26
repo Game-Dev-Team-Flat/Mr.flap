@@ -84,6 +84,7 @@ public class PlayerUseWeapon : UseWeapon
     private void DestroyAndInstantiateWeapon()
     {
         StopCoroutine("OnReload");
+        isReload = false;
         Destroy(weapon);
         weapon = Instantiate(weapons[slotNumber], transform.position + eyesOfObject.transform.forward * 0.5f + eyesOfObject.transform.up * -0.3f + eyesOfObject.transform.right * 0.3f, eyesOfObject.transform.rotation, eyesOfObject.transform);
     }

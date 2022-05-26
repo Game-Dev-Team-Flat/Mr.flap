@@ -15,15 +15,14 @@ namespace Weapon
         [SerializeField]
         private LayerMask targetLayerMask;
         private float lastFireTime;
-        private bool m_isReload = false;
-        protected bool isReload => m_isReload;
+        protected bool isReload = false;
         protected bool inputReload;
         protected bool startFire;
         protected bool stopFire;
 
         protected void WeaponAction(Gun _gun)
         {
-            if (!m_isReload)
+            if (!isReload)
             {
                 if (startFire)
                 {
@@ -60,7 +59,7 @@ namespace Weapon
                 switch (_gun.currentShotMode)
                 {
                     case Gun.ShotMode.Auto:
-                        while (_gun.currentAmmo > 0 && !m_isReload)
+                        while (_gun.currentAmmo > 0 && !isReload)
                         {
                             Shot(_gun);
                             yield return null;
@@ -68,7 +67,7 @@ namespace Weapon
                         break;
                     case Gun.ShotMode.Burst:
                         int theNumberOfFire = 0;
-                        while (_gun.currentAmmo > 0 && !m_isReload && theNumberOfFire < 3)
+                        while (_gun.currentAmmo > 0 && !isReload && theNumberOfFire < 3)
                         {
                             Shot(_gun);
                             theNumberOfFire++;
@@ -128,7 +127,7 @@ namespace Weapon
 
         protected IEnumerator OnReload(Gun _gun)
         {
-            m_isReload = true;
+            isReload = true;
             float _reloadTime = _gun.reloadTime;
             while (_reloadTime > 0)
             {
@@ -137,7 +136,7 @@ namespace Weapon
             }
             Debug.Log("Reload Complete");
             _gun.currentAmmo = _gun.maxAmmo;
-            m_isReload = false;
+            isReload = false;
         }
 
         private void PlaySound(AudioClip _clip)

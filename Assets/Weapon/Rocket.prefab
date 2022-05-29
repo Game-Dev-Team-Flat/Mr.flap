@@ -118,8 +118,8 @@ MonoBehaviour:
   gravityDownForce: 20
   moveSpeed: 50
   holdingTime: 3
-  explosionRadius: 0
-  explosionDamage: 0
+  explosionRadius: 3
+  explosionDamage: 40
 --- !u!54 &-7207868418718141377
 Rigidbody:
   m_ObjectHideFlags: 0

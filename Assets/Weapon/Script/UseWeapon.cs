@@ -122,6 +122,10 @@ namespace Weapon
             if (Physics.Raycast(eyesOfObject.transform.position, eyesOfObject.transform.forward, out m_collidertHit, _range, targetLayerMask))
             {
                 Debug.Log("Take Damage");
+                if (m_collidertHit.transform.TryGetComponent(out EntityInfo entityInfo))
+                {
+                    entityInfo.takenDamage += _damage;
+                }
             }
         }
 

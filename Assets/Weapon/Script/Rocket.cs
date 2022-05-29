@@ -1,10 +1,20 @@
 using UnityEngine;
 
-public class Rocket : Boom
+namespace Weapon
 {
-    private void OnTriggerEnter(Collider other)
+    public class Rocket : Boom
     {
-        if (other.gameObject.layer == targetLayerMask)
+        private void Update()
+        {
+            Movement();
+
+            if (Time.time - shotTime > holdingTime)
+            {
+                Explosion();
+            }
+        }
+
+        private void OnTriggerEnter(Collider other)
         {
             Explosion();
         }

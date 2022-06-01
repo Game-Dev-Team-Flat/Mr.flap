@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8709282841833905179}
   m_Layer: 0
   m_Name: Test Rocket Launcher
-  m_TagString: Untagged
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -105,4 +105,4 @@ MonoBehaviour:
   damage: 0
   shotMode: 1
   currentShotMode: 1
-  rocket: {fileID: 469844377020001361, guid: 374c4683a8a77d747ba6f315dd11342e, type: 3}
+  rocket: {fileID: 7345579554399628515, guid: 187253d741a2d6b47bb08367ed7b1f6e, type: 3}

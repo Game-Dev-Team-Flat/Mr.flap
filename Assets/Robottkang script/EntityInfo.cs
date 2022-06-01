@@ -4,13 +4,16 @@ using UnityEngine;
 
 public class EntityInfo : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject m_eyesOfObject;
     public Inventory[] inventory;
     public float maxHp;
-    public float m_currentHp;
+    [SerializeField]
+    private float m_currentHp;
     public float currentHp { get => m_currentHp; set => m_currentHp = value < 0 ? 0 : value; }
     public float hpReduceRate;
-    private float m_takenDamage;
-    public float takenDamage { get => m_takenDamage; set => m_takenDamage = value; }
+    public float takenDamage;
+    public GameObject eyesOfObject => m_eyesOfObject;
 
     private void Awake()
     {

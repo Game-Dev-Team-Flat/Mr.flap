@@ -119,8 +119,8 @@ MonoBehaviour:
   gravityDownForce: 20
   moveSpeed: 30
   holdingTime: 10
-  explosionRadius: 0
-  explosionDamage: 0
+  explosionRadius: 10
+  explosionDamage: 50
   adhesion: 1
 --- !u!54 &7354328373650208616
 Rigidbody:

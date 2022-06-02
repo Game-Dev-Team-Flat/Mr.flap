@@ -19,7 +19,7 @@ namespace Weapon
         [EnumFlags]
         public ShotMode shotMode;
         public ShotMode currentShotMode;
-
+        
         public enum ShotMode
         {
             Semiauto = 1,

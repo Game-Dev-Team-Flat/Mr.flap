@@ -127,9 +127,11 @@ GameObject:
   - component: {fileID: 3300005494099119080}
   - component: {fileID: 3300005494099119081}
   - component: {fileID: 3300005494099119082}
+  - component: {fileID: 922654509553728323}
   - component: {fileID: 3300005494099119083}
   - component: {fileID: 3300005494099119092}
   - component: {fileID: 3300005494099119093}
+  - component: {fileID: -8723501122054078130}
   - component: {fileID: 3300005494099119094}
   - component: {fileID: 3300005494099119095}
   m_Layer: 7
@@ -207,6 +209,26 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &922654509553728323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3300005494099119088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9792c195c80058040bb10e8fdb916787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_eyesOfObject: {fileID: 3300005494320368522}
+  inventory: []
+  maxHp: 100
+  m_currentHp: 100
+  hpReduceRate: 10
+  takenDamage: 0
+  m_reloadKey: 114
+  m_changeShotModeKey: 98
 --- !u!114 &3300005494099119083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -255,7 +277,7 @@ MonoBehaviour:
   rotSpeed: 300
   firstPersonVector: {x: 0, y: 0, z: 0}
   thirdPersonVector: {x: 0, y: 1, z: -5}
-  cameraBackDistance: 0
+  cameraBackDistance: 1
 --- !u!114 &3300005494099119093
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -268,16 +290,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebacbaf6f5463a34aae39966b194f3fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioSource: {fileID: 0}
-  eyesOfObject: {fileID: 3300005494320368522}
+--- !u!114 &-8723501122054078130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3300005494099119088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49af033c5f49bf642b005bd76f61213d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   targetLayerMask:
     serializedVersion: 2
     m_Bits: 320
-  weapons:
-  - {fileID: 5618889962838469731, guid: 2d733e8851b79044683f6a33a24e7cfa, type: 3}
-  reloadKey: 114
-  changeShotModeKey: 98
-  slotNumber: 0
 --- !u!54 &3300005494099119094
 Rigidbody:
   m_ObjectHideFlags: 0

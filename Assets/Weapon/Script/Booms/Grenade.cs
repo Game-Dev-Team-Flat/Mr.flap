@@ -1,39 +1,43 @@
 using UnityEngine;
 
-public class Grenade : Boom
+namespace Weapon
 {
-    [Header("-Grenade Setting")]
-    [SerializeField]
-    private bool adhesion;
-    private bool isObjectAdhered = false;
-    private GameObject adheredObject;
-    private Vector3 adheredVector;
-
-    private void Update()
+    public class Grenade : Boom
     {
-        Movement();
+        [Header("-Grenade Setting")]
+        [SerializeField]
+        private bool adhesion;
+        private bool isObjectAdhered = false;
+        private GameObject adheredObject;
+        private Vector3 adheredVector;
 
-        if (isObjectAdhered)
+        private void Update()
         {
-            transform.position = adheredObject.transform.position - adheredVector;
-        }
-        
-        if (Time.time - shotTime > holdingTime)
-        {
-            Explosion();
-        }
-    }
+            Movement();
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (adhesion)
+            if (isObjectAdhered)
+            {
+                transform.position = adheredObject.transform.position - adheredVector;
+            }
+
+            if (Time.time - shotTime > holdingTime)
+            {
+                Explosion();
+            }
+        }
+
+        private void OnCollisionEnter(Collision collision)
         {
-            velocity = Vector3.zero;
-            Destroy(GetComponent<Rigidbody>());
-            adheredObject = collision.gameObject;
-            isObjectAdhered = true;
-            adheredVector = collision.transform.position - transform.position;
-            useGravity = false;
+            if (adhesion)
+            {
+                velocity = Vector3.zero;
+                Destroy(GetComponent<Rigidbody>());
+                Destroy(GetComponent<Collider>());
+                adheredObject = collision.gameObject;
+                isObjectAdhered = true;
+                adheredVector = collision.transform.position - transform.position;
+                useGravity = false;
+            }
         }
     }
 }

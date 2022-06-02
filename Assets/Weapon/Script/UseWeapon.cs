@@ -5,11 +5,22 @@ namespace Weapon
 {
     public class UseWeapon : MonoBehaviour
     {
-        [SerializeField]
-        protected AudioSource audioSource;
+        private AudioSource m_audioSource;
+        private AudioSource audioSource
+        {
+            get
+            {
+                if (m_audioSource == null)
+                {
+                    m_audioSource = GetComponent<AudioSource>();
+                }
+                return m_audioSource;
+            }
+        }
 
         [SerializeField]
-        protected GameObject eyesOfObject;
+        protected GameObject standardObjectOfShot;
+
         private RaycastHit m_collidertHit;
         public RaycastHit colliderHit => m_collidertHit;
         [SerializeField]
@@ -119,9 +130,13 @@ namespace Weapon
 
         private void Hit(float _damage, float _range)
         {
-            if (Physics.Raycast(eyesOfObject.transform.position, eyesOfObject.transform.forward, out m_collidertHit, _range, targetLayerMask))
+            if (Physics.Raycast(standardObjectOfShot.transform.position, standardObjectOfShot.transform.forward, out m_collidertHit, _range, targetLayerMask))
             {
                 Debug.Log("Take Damage");
+                if (m_collidertHit.transform.TryGetComponent(out EntityInfo _entityInfo))
+                {
+                    _entityInfo.takenDamage += _damage;
+                }
             }
         }
 

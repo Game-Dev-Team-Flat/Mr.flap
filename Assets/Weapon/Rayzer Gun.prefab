@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -5296328514593217575}
   m_Layer: 0
   m_Name: Rayzer Gun
-  m_TagString: Untagged
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

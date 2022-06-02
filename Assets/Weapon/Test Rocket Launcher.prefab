@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8709282841833905179}
   m_Layer: 0
   m_Name: Test Rocket Launcher
-  m_TagString: Untagged
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxAmmo: 1
-  currentAmmo: 0
+  currentAmmo: 1
   fireRate: 100
   reloadTime: 1
   autoReload: 1

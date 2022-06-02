@@ -2,50 +2,59 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Boom : MonoBehaviour
+namespace Weapon
 {
-    [Header("-Boom Setting")]
-    [SerializeField]
-    protected LayerMask targetLayerMask;
-    [SerializeField]
-    protected bool useGravity;
-    [SerializeField]
-    private float gravityDownForce;
-    public float moveSpeed;
-    protected Vector3 velocity;
-    protected float velocityY;
-    [SerializeField]
-    protected float holdingTime;
-    protected float shotTime;
-    public float explosionRadius;
-    public float explosionDamage;
-
-    private void Awake()
+    public class Boom : MonoBehaviour
     {
-        velocity = transform.forward * moveSpeed;
-        velocityY = velocity.y;
-        shotTime = Time.time;
-    }
+        [Header("-Boom Setting")]
+        [SerializeField]
+        protected LayerMask targetLayerMask;
+        [SerializeField]
+        protected bool useGravity;
+        [SerializeField]
+        private float gravityDownForce;
+        public float moveSpeed;
+        protected Vector3 velocity;
+        protected float velocityY;
+        [SerializeField]
+        protected float holdingTime;
+        protected float shotTime;
+        public float explosionRadius;
+        public float explosionDamage;
 
-    protected void Explosion()
-    {
-        Debug.Log("Boom");
-        RaycastHit[] objectsHit = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f);
-        foreach (RaycastHit objectHit in objectsHit)
+        private void Awake()
         {
-            // objectHit.TryComponent해서 체력 정보 받아서 깎기
+            velocity = transform.forward * moveSpeed;
+            velocityY = velocity.y;
+            shotTime = Time.time;
         }
-        // 이펙트 발사
-        Destroy(gameObject);
-    }
 
-    protected void Movement()
-    {
-        if (useGravity)
+        protected void Explosion()
         {
-            velocityY -= gravityDownForce * Time.deltaTime;
-            velocity.y = velocityY;
+            Debug.Log("Boom");
+            RaycastHit[] objectsHit = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, ~LayerMask.GetMask("Floor"));
+            foreach (RaycastHit objectHit in objectsHit)
+            {
+                if (Physics.Raycast(transform.position, (objectHit.transform.position - transform.position).normalized, out RaycastHit raycastHit, float.MaxValue, ~LayerMask.GetMask("Floor")))
+                {
+                    if (objectHit.transform.TryGetComponent(out EntityInfo entityInfo))
+                    {
+                        entityInfo.takenDamage += (entityInfo.transform.gameObject.layer == LayerMask.GetMask("Player")) ? (explosionDamage / 10f) : explosionDamage;
+                    }
+                }
+            }
+            // 이펙트 발사
+            Destroy(gameObject);
         }
-        transform.position = transform.position + velocity * Time.deltaTime;
+
+        protected void Movement()
+        {
+            if (useGravity)
+            {
+                velocityY -= gravityDownForce * Time.deltaTime;
+                velocity.y = velocityY;
+            }
+            transform.position = transform.position + velocity * Time.deltaTime;
+        }
     }
 }

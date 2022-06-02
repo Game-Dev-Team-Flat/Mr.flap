@@ -49,18 +49,37 @@ public class PlayerUseWeapon : UseWeapon
     {
         if (_gun.currentShotMode == Gun.ShotMode.Semiauto)
         {
-            if ((int)_gun.shotMode / 2 % 2 == 1) _gun.currentShotMode = Gun.ShotMode.Auto;
-            else if ((int)_gun.shotMode / 4 % 2 == 1) _gun.currentShotMode = Gun.ShotMode.Burst;
+            if ((int)_gun.shotMode / 2 % 2 != 0)
+            {
+                _gun.currentShotMode = Gun.ShotMode.Auto;
+            }
+            else if ((int)_gun.shotMode / 4 % 2 != 0)
+            {
+                _gun.currentShotMode = Gun.ShotMode.Burst;
+            }
         }
         if (_gun.currentShotMode == Gun.ShotMode.Auto)
         {
-            if ((int)_gun.shotMode / 4 % 2 == 1) _gun.currentShotMode = Gun.ShotMode.Burst;
-            else if ((int)_gun.shotMode % 2 == 1) _gun.currentShotMode = Gun.ShotMode.Semiauto;
+            if ((int)_gun.shotMode / 4 % 2 != 0)
+            {
+                _gun.currentShotMode = Gun.ShotMode.Burst;
+            }
+            else if ((int)_gun.shotMode % 2 != 0)
+            {
+                _gun.currentShotMode = Gun.ShotMode.Semiauto;
+            }
+
         }
         if (_gun.currentShotMode == Gun.ShotMode.Burst)
         {
-            if ((int)_gun.shotMode % 2 == 1) _gun.currentShotMode = Gun.ShotMode.Semiauto;
-            else if ((int)_gun.shotMode / 2 % 2 == 1) _gun.currentShotMode = Gun.ShotMode.Auto;
+            if ((int)_gun.shotMode % 2 != 0)
+            {
+                _gun.currentShotMode = Gun.ShotMode.Semiauto;
+            }
+            else if ((int)_gun.shotMode / 2 % 2 != 0)
+            {
+                _gun.currentShotMode = Gun.ShotMode.Auto;
+            }
         }
     }
 

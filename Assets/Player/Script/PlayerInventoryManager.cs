@@ -24,12 +24,22 @@ public class PlayerInventoryManager : MonoBehaviour
     private void SwapSlot()
     {
         int defaultSlotNumber = playerInfo.inventorySlotNumber;
-        if (Input.GetAxisRaw("Mouse ScrollWheel") > 0) playerInfo.inventorySlotNumber++;
-        if (Input.GetAxisRaw("Mouse ScrollWheel") < 0) playerInfo.inventorySlotNumber--; // 휠로 슬롯 변경
+
+        if (Input.GetAxisRaw("Mouse ScrollWheel") > 0) // 휠로 슬롯 변경
+        {
+            playerInfo.inventorySlotNumber++;
+        }
+        if (Input.GetAxisRaw("Mouse ScrollWheel") < 0)
+        {
+            playerInfo.inventorySlotNumber--;
+        }
 
         for (int i = 0; i < playerInfo.inventory.Length; i++)
         {
-            if (Input.GetKeyDown((KeyCode)(49 + i))) playerInfo.inventorySlotNumber = i; // alpha Number로 슬롯 변경
+            if (Input.GetKeyDown((KeyCode)(49 + i)))   // alpha Number로 슬롯 변경
+            {
+                playerInfo.inventorySlotNumber = i;
+            }
         }
 
         if (playerInfo.inventorySlotNumber != defaultSlotNumber) // 슬롯이 변경됐을 때

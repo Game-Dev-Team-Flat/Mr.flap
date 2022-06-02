@@ -8,10 +8,13 @@ namespace Weapon
         private AudioSource m_audioSource;
         private AudioSource audioSource
         {
-            get => m_audioSource;
-            set
+            get
             {
-                m_audioSource = gameObject.GetComponent<AudioSource>();
+                if (m_audioSource == null)
+                {
+                    m_audioSource = GetComponent<AudioSource>();
+                }
+                return m_audioSource;
             }
         }
 

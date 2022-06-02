@@ -29,8 +29,14 @@ public class PlayerUseWeapon : UseWeapon
             {
                 Instantiate(_rocketLauncher.rocket, playerInfo.eyesOfObject.transform.position + playerInfo.eyesOfObject.transform.forward * 1f + playerInfo.eyesOfObject.transform.up * -0.3f + playerInfo.eyesOfObject.transform.right * 0.3f, playerInfo.eyesOfObject.transform.rotation);
             }
-            if (itemHand.TryGetComponent(out Gun _gun)) WeaponAction(_gun);
-            if (itemHand.TryGetComponent(out Knife _knife)) WeaponAction(_knife);
+            if (itemHand.TryGetComponent(out Gun _gun))
+            {
+                WeaponAction(_gun);
+            }
+            if (itemHand.TryGetComponent(out Knife _knife))
+            {
+                WeaponAction(_knife);
+            }
             
             if (Input.GetKeyDown(playerInfo.changeShotModeKey) && _gun != null)
             {

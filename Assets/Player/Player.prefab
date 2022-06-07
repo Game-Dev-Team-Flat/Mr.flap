@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3300005493506347183}
   - component: {fileID: 3300005493506347176}
   - component: {fileID: 3300005493506347177}
+  - component: {fileID: 5201537824480972390}
   m_Layer: 0
   m_Name: Player Camera
   m_TagString: MainCamera
@@ -84,6 +85,18 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3300005493506347178}
   m_Enabled: 1
+--- !u!114 &5201537824480972390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3300005493506347178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf8a7efac05f1cd42a93e2ddbfbfc178, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3300005493685542735
 GameObject:
   m_ObjectHideFlags: 0
@@ -222,7 +235,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_eyesOfObject: {fileID: 3300005494320368522}
-  inventory: []
+  inventory:
+  - item: {fileID: 5618889962838469731, guid: 2d733e8851b79044683f6a33a24e7cfa, type: 3}
+    count: 1
+  - item: {fileID: 41958176849725547, guid: 2b8e8abc4b70fd746a28197dda5919b5, type: 3}
+    count: 1
   maxHp: 100
   m_currentHp: 100
   hpReduceRate: 10
@@ -242,6 +259,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravityDownForce: 35
+  playerCamera: {fileID: 3300005493506347176}
+  normalFov: 60
+  hookshotFov: 80
+  dashFov: 80
+  chopdriverFov: 70
   hookShotMoveSpeedMin: 40
   hookShotMoveSpeedMax: 50
   hookShotCoolTime: 1
@@ -290,6 +312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebacbaf6f5463a34aae39966b194f3fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemPosition: {x: 0.5, y: -0.3, z: 0.3}
 --- !u!114 &-8723501122054078130
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -302,6 +325,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49af033c5f49bf642b005bd76f61213d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  standardObjectOfShot: {fileID: 3300005494320368522}
   targetLayerMask:
     serializedVersion: 2
     m_Bits: 320

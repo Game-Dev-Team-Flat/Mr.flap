@@ -6,6 +6,18 @@ public class PlayerController : MonoBehaviour
 {
     private CharacterController characterController;
     public float gravityDownForce;
+    [Header("-Camera Setting")]
+    [SerializeField]
+    private Camera playerCamera;
+    [SerializeField]
+    private float normalFov;
+    [SerializeField]
+    private float hookshotFov;
+    [SerializeField]
+    private float dashFov;
+    [SerializeField]
+    private float chopdriverFov;
+    private CameraFov cameraFov;
 
     [Header("-HookShot")]
     public float hookShotMoveSpeedMin;
@@ -67,6 +79,7 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        cameraFov = Camera.main.GetComponent<CameraFov>();
         characterController = GetComponent<CharacterController>();
         state = State.Normal;
         hookshotTransform.gameObject.SetActive(false);
@@ -186,7 +199,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1) && isHookShotReload)
         {
-            mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+            mouseRay = playerCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(mouseRay, out hitCollider, float.MaxValue, LayerMask.GetMask("Floor")))
             {
                 isHookShotReload = false;
@@ -207,6 +220,7 @@ public class PlayerController : MonoBehaviour
         if (hookshotSize >= Vector3.Distance(hookshotTransform.position, hitCollider.point))
         {
             state = State.HookShotFlyingPlayer;
+            cameraFov.SetCameraFov(hookshotFov);
         }
     }
 
@@ -225,6 +239,7 @@ public class PlayerController : MonoBehaviour
             ResetToNormalState();
             float hookshotUpMomentum = hookshotDir.y * hookShotSpeed * momentumExtraSpeed;
             characterVelocityMomentum = Vector3.up * (hookshotUpMomentum > minHookshotUpMomentum ? hookshotUpMomentum : minHookshotUpMomentum);
+            cameraFov.SetCameraFov(normalFov);
             hookshotTransform.gameObject.SetActive(false);
         }
     }
@@ -265,6 +280,7 @@ public class PlayerController : MonoBehaviour
         {
             if (canDash)
             {
+                cameraFov.SetCameraFov(dashFov);
                 StartCoroutine(DashMovement(dashDurationTime, _dashCharacterVelocity));
                 StartCoroutine(DashReload(dashCoolTime));
             }
@@ -284,6 +300,7 @@ public class PlayerController : MonoBehaviour
         }
         characterVelocityMomentum = Vector3.zero;
         characterVelocityY = 0;
+        cameraFov.SetCameraFov(normalFov);
         state = dashBeforeState;
     }
 
@@ -312,6 +329,7 @@ public class PlayerController : MonoBehaviour
                     characterVelocityMomentum = Vector3.zero;
                     state = State.ChopDriver;
                     characterVelocityY = 15f;
+                    cameraFov.SetCameraFov(chopdriverFov);
                 }
             }
         }
@@ -331,6 +349,7 @@ public class PlayerController : MonoBehaviour
         if (characterController.isGrounded)
         {
             StartCoroutine(ReloadChopDriver(chopDriverCoolTime));
+            cameraFov.SetCameraFov(normalFov);
             ResetToNormalState();
         }
     }

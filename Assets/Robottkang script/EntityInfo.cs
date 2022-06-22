@@ -5,7 +5,7 @@ using UnityEngine;
 public class EntityInfo : MonoBehaviour
 {
     [SerializeField]
-    private GameObject m_eyesOfObject;
+    private Transform m_eyesOfObject;
     public Inventory[] inventory;
     public float maxHp;
     [SerializeField]
@@ -13,7 +13,7 @@ public class EntityInfo : MonoBehaviour
     public float currentHp { get => m_currentHp; set => m_currentHp = value < 0 ? 0 : value; }
     public float hpReduceRate;
     public float takenDamage;
-    public GameObject eyesOfObject => m_eyesOfObject;
+    public Transform eyesOfObject => m_eyesOfObject;
 
     private void Awake()
     {

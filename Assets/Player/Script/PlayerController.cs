@@ -22,10 +22,11 @@ public class PlayerController : MonoBehaviour
     [Header("-HookShot")]
     public float hookShotMoveSpeedMin;
     public float hookShotMoveSpeedMax;
+    public float hookShotLimitMaxDistance;
     private float hookShotSpeed;
     public float hookShotCoolTime;
     [HideInInspector]
-    public State state;
+    public State state = State.Normal;
     private Ray mouseRay;
     private RaycastHit hitCollider;
     private bool isHookShotReload = true;
@@ -81,7 +82,6 @@ public class PlayerController : MonoBehaviour
     {
         cameraFov = Camera.main.GetComponent<CameraFov>();
         characterController = GetComponent<CharacterController>();
-        state = State.Normal;
         hookshotTransform.gameObject.SetActive(false);
     }
 
@@ -94,22 +94,22 @@ public class PlayerController : MonoBehaviour
             CheckIpnutDashKeyCode();
             CheckConditionOfChopDriver();
         }
-        if(state == State.HookShotThrown)
+        if (state == State.HookShotThrown)
         {
             PlayerMovement();
             HookshotThrow();
             CheckIpnutDashKeyCode();
         }
-        if(state == State.HookShotFlyingPlayer)
+        if (state == State.HookShotFlyingPlayer)
         {
             CheckIpnutDashKeyCode();
             HookShotMovement();
         }
-        if(state == State.DashingPlayer)
+        if (state == State.DashingPlayer)
         {
             Dash();
         }
-        if(state == State.ChopDriver)
+        if (state == State.ChopDriver)
         {
             ChopDriver();
         }
@@ -133,10 +133,10 @@ public class PlayerController : MonoBehaviour
 
         characterController.Move(characterVelocity * Time.deltaTime);
 
-        if(characterVelocityMomentum.magnitude >= 0f)
+        if (characterVelocityMomentum.magnitude >= 0f)
         {
             characterVelocityMomentum -= characterVelocityMomentum * momentumDrag * Time.deltaTime;
-            if(characterVelocityMomentum.magnitude < 0f || characterController.isGrounded)
+            if (characterVelocityMomentum.magnitude < 0f || characterController.isGrounded)
             {
                 characterVelocityMomentum = Vector3.zero;
             }
@@ -200,7 +200,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetMouseButtonDown(1) && isHookShotReload)
         {
             mouseRay = playerCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(mouseRay, out hitCollider, float.MaxValue, LayerMask.GetMask("Floor")))
+            if (Physics.Raycast(mouseRay, out hitCollider, hookShotLimitMaxDistance, LayerMask.GetMask("Floor")))
             {
                 isHookShotReload = false;
                 hookshotSize = 0f;
@@ -306,7 +306,7 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator DashReload(float _coolTime)
     {
-        while(_coolTime > 0)
+        while (_coolTime > 0)
         {
             _coolTime -= Time.deltaTime;
             yield return new WaitForFixedUpdate();
@@ -323,7 +323,7 @@ public class PlayerController : MonoBehaviour
             if ((transform.position.y - hitFloor.point.y) > heightCanChopDriver)
             {
                 Debug.Log("Can ChopDriver");
-                if(Input.GetKeyDown(KeyCode.Q) && !isChopDrive)
+                if (Input.GetKeyDown(KeyCode.Q) && !isChopDrive)
                 {
                     characterVelocity = Vector3.zero + Vector3.down * chopDriverForce;
                     characterVelocityMomentum = Vector3.zero;

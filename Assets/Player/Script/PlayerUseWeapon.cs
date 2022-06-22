@@ -23,11 +23,11 @@ public class PlayerUseWeapon : UseWeapon
             inputReload = Input.GetKeyDown(playerInfo.reloadKey);
 
             startFire = ActiveStartFire(itemHand);
-            stopFire  = ActiveStopFire(itemHand);
+            stopFire = ActiveStopFire(itemHand);
 
             if (itemHand.TryGetComponent(out RocketLauncher _rocketLauncher) && _rocketLauncher.currentAmmo > 0 && startFire)
             {
-                Instantiate(_rocketLauncher.rocket, playerInfo.eyesOfObject.transform.position + playerInfo.eyesOfObject.transform.forward * 1f + playerInfo.eyesOfObject.transform.up * -0.3f + playerInfo.eyesOfObject.transform.right * 0.3f, playerInfo.eyesOfObject.transform.rotation);
+                Instantiate(_rocketLauncher.rocket, playerInfo.eyesOfObject.position + playerInfo.eyesOfObject.forward * 1f + playerInfo.eyesOfObject.up * -0.3f + playerInfo.eyesOfObject.right * 0.3f, playerInfo.eyesOfObject.rotation);
             }
             if (itemHand.TryGetComponent(out Gun _gun))
             {
@@ -37,7 +37,7 @@ public class PlayerUseWeapon : UseWeapon
             {
                 WeaponAction(_knife);
             }
-            
+
             if (Input.GetKeyDown(playerInfo.changeShotModeKey) && _gun != null)
             {
                 ChangeShotMode(_gun);

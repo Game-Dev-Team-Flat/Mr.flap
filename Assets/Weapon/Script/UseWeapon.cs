@@ -19,7 +19,7 @@ namespace Weapon
         }
 
         [SerializeField]
-        protected GameObject standardObjectOfShot;
+        protected Transform standardObjectOfShot;
 
         private RaycastHit m_collidertHit;
         public RaycastHit colliderHit => m_collidertHit;
@@ -130,7 +130,7 @@ namespace Weapon
 
         private void Hit(float _damage, float _range)
         {
-            if (Physics.Raycast(standardObjectOfShot.transform.position, standardObjectOfShot.transform.forward, out m_collidertHit, _range, targetLayerMask))
+            if (Physics.Raycast(standardObjectOfShot.position, standardObjectOfShot.forward, out m_collidertHit, _range, targetLayerMask))
             {
                 Debug.Log("Take Damage");
                 if (m_collidertHit.transform.TryGetComponent(out EntityInfo _entityInfo))

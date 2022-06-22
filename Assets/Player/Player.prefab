@@ -149,7 +149,7 @@ GameObject:
   - component: {fileID: 3300005494099119095}
   m_Layer: 7
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -234,11 +234,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9792c195c80058040bb10e8fdb916787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_eyesOfObject: {fileID: 3300005494320368522}
+  m_eyesOfObject: {fileID: 3300005494320368521}
   inventory:
   - item: {fileID: 5618889962838469731, guid: 2d733e8851b79044683f6a33a24e7cfa, type: 3}
     count: 1
   - item: {fileID: 41958176849725547, guid: 2b8e8abc4b70fd746a28197dda5919b5, type: 3}
+    count: 1
+  - item: {fileID: 8676740880830533881, guid: 7d9e92b00c054ae43aeb340151173abd, type: 3}
     count: 1
   maxHp: 100
   m_currentHp: 100
@@ -266,6 +268,7 @@ MonoBehaviour:
   chopdriverFov: 70
   hookShotMoveSpeedMin: 40
   hookShotMoveSpeedMax: 50
+  hookShotLimitMaxDistance: 200
   hookShotCoolTime: 1
   state: 0
   hookshotTransform: {fileID: 3300005493685542734}
@@ -312,7 +315,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebacbaf6f5463a34aae39966b194f3fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemPosition: {x: 0.5, y: -0.3, z: 0.3}
+  itemPosition: {x: 0.3, y: -0.3, z: 0.5}
 --- !u!114 &-8723501122054078130
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -372,7 +375,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3300005494320368521}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Eyes
   m_TagString: Untagged
   m_Icon: {fileID: 0}

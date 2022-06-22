@@ -13,7 +13,7 @@ public class PlayerInventoryManager : MonoBehaviour
     private void Awake()
     {
         playerInfo = GetComponent<PlayerInfo>();
-        m_itemHand = Instantiate(playerInfo.inventory[playerInfo.inventorySlotNumber].item, transform.position + playerInfo.eyesOfObject.transform.forward * itemPosition.x + playerInfo.eyesOfObject.transform.up * itemPosition.y + playerInfo.eyesOfObject.transform.right * itemPosition.z, playerInfo.eyesOfObject.transform.rotation, playerInfo.eyesOfObject.transform);
+        m_itemHand = Instantiate(playerInfo.inventory[playerInfo.inventorySlotNumber].item, transform.position + playerInfo.eyesOfObject.forward * itemPosition.z + playerInfo.eyesOfObject.up * itemPosition.y + playerInfo.eyesOfObject.right * itemPosition.x, playerInfo.eyesOfObject.rotation, playerInfo.eyesOfObject);
     }
 
     private void Update()
@@ -51,6 +51,6 @@ public class PlayerInventoryManager : MonoBehaviour
     private void DestroyAndInstantiateItem()
     {
         Destroy(itemHand);
-        m_itemHand = Instantiate(playerInfo.inventory[playerInfo.inventorySlotNumber].item, transform.position + playerInfo.eyesOfObject.transform.forward * itemPosition.x + playerInfo.eyesOfObject.transform.up * itemPosition.y + playerInfo.eyesOfObject.transform.right * itemPosition.z, playerInfo.eyesOfObject.transform.rotation, playerInfo.eyesOfObject.transform);
+        m_itemHand = Instantiate(playerInfo.inventory[playerInfo.inventorySlotNumber].item, transform.position + playerInfo.eyesOfObject.forward * itemPosition.x + playerInfo.eyesOfObject.up * itemPosition.y + playerInfo.eyesOfObject.right * itemPosition.x, playerInfo.eyesOfObject.rotation, playerInfo.eyesOfObject);
     }
 }

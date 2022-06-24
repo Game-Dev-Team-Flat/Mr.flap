@@ -9,6 +9,9 @@ namespace Enemy
     public class EnemyController : MonoBehaviour
     {
         [SerializeField]
+        private Transform path;
+        [Space(20)]
+        [SerializeField]
         TextMeshPro state;
         [SerializeField]
         private DetectTarget detectTarget;
@@ -38,8 +41,6 @@ namespace Enemy
         }
         [SerializeField]
         private float identifyingTime;
-        [SerializeField]
-        private Transform path;
         private NavMeshAgent navMeshAgent;
         private int m_currentNode = 0;
         private int currentNode // 0부터 path.childCount까지 순환

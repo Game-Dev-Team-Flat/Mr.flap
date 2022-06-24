@@ -5,6 +5,8 @@ using UnityEngine;
 public class PlayerInfo : EntityInfo
 {
     [SerializeField]
+    private Transform m_eyesOfObject;
+    [SerializeField]
     private KeyCode m_reloadKey;
     [SerializeField]
     private KeyCode m_changeShotModeKey;
@@ -12,6 +14,7 @@ public class PlayerInfo : EntityInfo
 
     public KeyCode reloadKey => m_reloadKey;
     public KeyCode changeShotModeKey => m_changeShotModeKey;
+    public Transform eyesOfObject => m_eyesOfObject;
     // 인벤토리의 슬롯 넘버를 제한
     public int inventorySlotNumber
     {

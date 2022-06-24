@@ -14,6 +14,8 @@ namespace Enemy
         private float shootAngle;
         [SerializeField]
         private float shootDistance;
+        [SerializeField]
+        private EntityInfo enemyInfo;
 
         private void Awake()
         {
@@ -25,6 +27,8 @@ namespace Enemy
         {
             startFire = IsInFireArea();
             stopFire = !IsInFireArea();
+
+            //if (enemyInfo.inventory.item.TryGetComponent(out Gun gun)) WeaponAction();
         }
 
         private bool IsInFireArea()

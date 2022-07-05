@@ -20,6 +20,8 @@ public class PlayerController : MonoBehaviour
     private CameraFov cameraFov;
 
     [Header("-HookShot")]
+    [SerializeField]
+    private bool isUseHookShoot;
     public float hookShotMoveSpeedMin;
     public float hookShotMoveSpeedMax;
     public float hookShotLimitMaxDistance;
@@ -181,12 +183,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private IEnumerator AddExtraJump(float _coolTime)
+    private IEnumerator AddExtraJump(float coolTime)
     {
         isAddExtraJumpCoolTime = true;
-        while (_coolTime > 0)
+        while (coolTime > 0)
         {
-            _coolTime -= Time.deltaTime;
+            coolTime -= Time.deltaTime;
             yield return new WaitForFixedUpdate();
         }
         Debug.Log("Charged ExtraJump");
@@ -197,7 +199,7 @@ public class PlayerController : MonoBehaviour
 
     private void HookShot()
     {
-        if (Input.GetMouseButtonDown(1) && isHookShotReload)
+        if (Input.GetMouseButtonDown(1) && isHookShotReload && isUseHookShoot)
         {
             mouseRay = playerCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(mouseRay, out hitCollider, hookShotLimitMaxDistance, LayerMask.GetMask("Floor")))
@@ -244,9 +246,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private IEnumerator HookReload(float _coolTime)
+    private IEnumerator HookReload(float coolTime)
     {
-        yield return new WaitForSeconds(_coolTime);
+        yield return new WaitForSeconds(coolTime);
         isHookShotReload = true;
         Debug.Log("Hook Reloaded");
     }
@@ -270,8 +272,8 @@ public class PlayerController : MonoBehaviour
         float moveX = Input.GetAxisRaw("Horizontal");
         float moveZ = Input.GetAxisRaw("Vertical");
 
-        Vector3 _dashCharacterVelocity = (transform.right * moveX + transform.forward * moveZ) * dashSpeed;
-        if (_dashCharacterVelocity == Vector3.zero)
+        Vector3 dashCharacterVelocity = (transform.right * moveX + transform.forward * moveZ) * dashSpeed;
+        if (dashCharacterVelocity == Vector3.zero)
         {
             Debug.Log("Did not dash");
             state = dashBeforeState;
@@ -281,21 +283,21 @@ public class PlayerController : MonoBehaviour
             if (canDash)
             {
                 cameraFov.SetCameraFov(dashFov);
-                StartCoroutine(DashMovement(dashDurationTime, _dashCharacterVelocity));
+                StartCoroutine(DashMovement(dashDurationTime, dashCharacterVelocity));
                 StartCoroutine(DashReload(dashCoolTime));
             }
         }
     }
 
-    private IEnumerator DashMovement(float _durationTime, Vector3 _dashCharacterVelocity)
+    private IEnumerator DashMovement(float durationTime, Vector3 dashCharacterVelocity)
     {
         canDash = false;
-        _dashCharacterVelocity.y = 0;
-        while (_durationTime > 0)
+        dashCharacterVelocity.y = 0;
+        while (durationTime > 0)
         {
-            _durationTime -= Time.deltaTime;
+            durationTime -= Time.deltaTime;
             hookshotTransform.LookAt(hitCollider.point);
-            characterController.Move(_dashCharacterVelocity * Time.deltaTime);
+            characterController.Move(dashCharacterVelocity * Time.deltaTime);
             yield return new WaitForFixedUpdate();
         }
         characterVelocityMomentum = Vector3.zero;
@@ -304,11 +306,11 @@ public class PlayerController : MonoBehaviour
         state = dashBeforeState;
     }
 
-    private IEnumerator DashReload(float _coolTime)
+    private IEnumerator DashReload(float coolTime)
     {
-        while (_coolTime > 0)
+        while (coolTime > 0)
         {
-            _coolTime -= Time.deltaTime;
+            coolTime -= Time.deltaTime;
             yield return new WaitForFixedUpdate();
         }
         canDash = true;
@@ -354,12 +356,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private IEnumerator ReloadChopDriver(float _coolTime)
+    private IEnumerator ReloadChopDriver(float coolTime)
     {
         isChopDrive = true;
-        while (_coolTime > 0)
+        while (coolTime > 0)
         {
-            _coolTime -= Time.deltaTime;
+            coolTime -= Time.deltaTime;
             yield return new WaitForFixedUpdate();
         }
         isChopDrive = false;

@@ -295,18 +295,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9792c195c80058040bb10e8fdb916787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_eyesOfObject: {fileID: 3300005494320368521}
   inventory:
   - item: {fileID: 5618889962838469731, guid: 2d733e8851b79044683f6a33a24e7cfa, type: 3}
     count: 1
   - item: {fileID: 41958176849725547, guid: 2b8e8abc4b70fd746a28197dda5919b5, type: 3}
     count: 1
-  - item: {fileID: 8676740880830533881, guid: 7d9e92b00c054ae43aeb340151173abd, type: 3}
+  - item: {fileID: 1967774430030789185, guid: c710770ffdd4e164d915ba794db932a8, type: 3}
     count: 1
   maxHp: 100
   m_currentHp: 100
   hpReduceRate: 10
   takenDamage: 0
+  m_eyesOfObject: {fileID: 3300005494320368521}
   m_reloadKey: 114
   m_changeShotModeKey: 98
 --- !u!114 &3300005494099119083
@@ -327,6 +327,7 @@ MonoBehaviour:
   hookshotFov: 80
   dashFov: 80
   chopdriverFov: 70
+  isUseHookShoot: 1
   hookShotMoveSpeedMin: 40
   hookShotMoveSpeedMax: 50
   hookShotLimitMaxDistance: 200
@@ -389,7 +390,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49af033c5f49bf642b005bd76f61213d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  standardObjectOfShot: {fileID: 3300005494320368522}
+  standardObjectOfShot: {fileID: 3300005494320368521}
   targetLayerMask:
     serializedVersion: 2
     m_Bits: 320

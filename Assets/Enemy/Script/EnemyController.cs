@@ -77,7 +77,7 @@ namespace Enemy
                 }
             }
         }
-        private Transform LastDetectedTransform;
+        private Vector3 LastDetectedPosition;
 
         public enum EnemyState
         {
@@ -118,7 +118,7 @@ namespace Enemy
             }
             else // 발견이 안되면
             {
-                if (m_enemyState == EnemyState.DetectingSomthing && detectedTime > 0f) // 자꾸 DetectTarget이 Null값이 되는 버그와 lastdetecttransform이 실시간 반영되는 버그가 있음
+                if (m_enemyState == EnemyState.DetectingSomthing && detectedTime > 0f) // 자꾸 DetectTarget이 Null값이 되는 버그
                 {
                     detectedTime -= Time.deltaTime / 2f;
                     return EnemyState.DetectingSomthing;
@@ -152,20 +152,20 @@ namespace Enemy
                     Patrol();
                     break;
                 case EnemyState.DetectingTarget:
-                    LookAtTarget(targetObject.transform);
+                    LookAtTarget(targetObject.transform.position);
                     StopNavMeshAgentMovement();
-                    LastDetectedTransform = targetObject.transform;
+                    LastDetectedPosition = targetObject.transform.position;
                     break;
                 case EnemyState.DetectingSomthing:
                     StopNavMeshAgentMovement();
-                    LookAtTarget(targetObject.transform);
+                    LookAtTarget(targetObject.transform.position);
                     break;
                 case EnemyState.MissingTargetSideways:
                     StopNavMeshAgentMovement();
-                    LookAtTarget(LastDetectedTransform);
+                    LookAtTarget(targetObject.transform.position);
                     break;
                 case EnemyState.TargetOverDetectingDistance:
-                    ChaseTarget(LastDetectedTransform.position);
+                    ChaseTarget(LastDetectedPosition);
                     break;
                 default:
                     StopNavMeshAgentMovement();
@@ -201,10 +201,10 @@ namespace Enemy
             navMeshAgent.destination = transform.position;
         }
 
-        private void LookAtTarget(Transform target)
+        private void LookAtTarget(Vector3 target)
         {
             navMeshAgent.speed = 0f;
-            Quaternion targetRotation = Quaternion.LookRotation(target.position - transform.position);
+            Quaternion targetRotation = Quaternion.LookRotation(target - transform.position);
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * navMeshAgent.angularSpeed / 180f);
         }

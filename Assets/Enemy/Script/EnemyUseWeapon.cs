@@ -25,25 +25,55 @@ namespace Enemy
 
         private void Update()
         {
+            Targeting();
+
             startFire = IsInFireArea();
             stopFire = !IsInFireArea();
 
-            //if (enemyInfo.inventory.item.TryGetComponent(out Gun gun)) WeaponAction();
+            if (enemyInfo.inventory[0].item.TryGetComponent(out Gun gun))
+            {
+                WeaponAction(gun);
+            }
         }
 
         private bool IsInFireArea()
         {
-            float radianRange = Mathf.Cos(shootAngle / 2 * Mathf.Deg2Rad);
-
-            float targetRadian = Vector3.Dot(standardObjectOfShot.forward, (detectTarget.detectedObject.transform.position - transform.position).normalized);
-            
-            if (radianRange < targetRadian && Vector3.Distance(detectTarget.detectedObject.transform.position, transform.position) < shootDistance)
+            if (detectTarget.detectedObject != null && enemyController.enemyState == EnemyController.EnemyState.DetectingTarget)
             {
-                return true;
+                float radianRange = Mathf.Cos(shootAngle / 2 * Mathf.Deg2Rad);
+
+                float targetRadian = Vector3.Dot(standardObjectOfShot.forward, (enemyController.targetObject.transform.position - transform.position).normalized);
+
+                if (radianRange > targetRadian && Vector3.Distance(enemyController.targetObject.transform.position, transform.position) < shootDistance)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
                 return false;
+            }
+        }
+
+        private void Targeting()
+        {
+            if (detectTarget.detectedObject != null)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(enemyController.targetObject.transform.position - enemyInfo.inventory[0].item.transform.position);
+
+                float rotateSpeed = 5f;
+                targetRotation = Quaternion.Euler(new Vector3(targetRotation.eulerAngles.x, enemyInfo.inventory[0].item.transform.eulerAngles.y, enemyInfo.inventory[0].item.transform.eulerAngles.z));
+                enemyInfo.inventory[0].item.transform.rotation = Quaternion.Slerp(enemyInfo.inventory[0].item.transform.rotation, targetRotation, Time.deltaTime * rotateSpeed);
+            }
+            else
+            {
+                float rotateSpeed = 5f;
+                Quaternion targetRotation = Quaternion.Euler(new Vector3(0, enemyInfo.inventory[0].item.transform.eulerAngles.y, enemyInfo.inventory[0].item.transform.eulerAngles.z));
+                enemyInfo.inventory[0].item.transform.rotation = Quaternion.Slerp(enemyInfo.inventory[0].item.transform.rotation, targetRotation, Time.deltaTime * rotateSpeed);
             }
         }
     }

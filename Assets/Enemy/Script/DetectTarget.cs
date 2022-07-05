@@ -60,7 +60,7 @@ public class DetectTarget : MonoBehaviour
         }
     }
 
-    public void SearchTarget(LayerMask _targetLayerMask)
+    public void SearchTarget(LayerMask targetLayerMask)
     {
         float radianRange = Mathf.Cos(detectionAngle / 2 * Mathf.Deg2Rad);
 
@@ -78,7 +78,7 @@ public class DetectTarget : MonoBehaviour
             
             if (Physics.Raycast(transform.position, (targetObjects[i].transform.position - transform.position).normalized, out RaycastHit raycastHitCollider, detectionDistance))
             {
-                if (((int)Mathf.Pow(2, raycastHitCollider.transform.gameObject.layer) & _targetLayerMask) != 0)
+                if (((int)Mathf.Pow(2, raycastHitCollider.transform.gameObject.layer) & targetLayerMask) != 0)
                 {
                     Debug.Log("Detect Tagert!");
                     detectedObject = targetObjects[i];

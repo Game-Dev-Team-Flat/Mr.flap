@@ -295,7 +295,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9792c195c80058040bb10e8fdb916787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inventory:
+  m_inventory:
   - item: {fileID: 5618889962838469731, guid: 2d733e8851b79044683f6a33a24e7cfa, type: 3}
     count: 1
   - item: {fileID: 41958176849725547, guid: 2b8e8abc4b70fd746a28197dda5919b5, type: 3}

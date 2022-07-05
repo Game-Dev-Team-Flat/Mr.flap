@@ -15,11 +15,6 @@ public class PlayerInfo : EntityInfo
     public KeyCode changeShotModeKey => m_changeShotModeKey;
     public Transform eyesOfObject => m_eyesOfObject;
 
-    private void Awake()
-    {
-        currentHp = maxHp;
-    }
-
     private void Update()
     {
         CalculateDamage();

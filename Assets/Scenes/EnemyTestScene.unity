@@ -1683,10 +1683,10 @@ GameObject:
   - component: {fileID: 1968605810}
   - component: {fileID: 1968605809}
   - component: {fileID: 1968605808}
+  - component: {fileID: 1968605817}
   - component: {fileID: 1968605814}
   - component: {fileID: 1968605813}
   - component: {fileID: 1968605816}
-  - component: {fileID: 1968605817}
   - component: {fileID: 1968605812}
   m_Layer: 0
   m_Name: Enemy
@@ -1842,7 +1842,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1968605806}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e83dec508e945ac4bb5be85870682bc3, type: 3}
   m_Name: 
@@ -1867,9 +1867,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 563e4716c4e74844aa515abd0f877bff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inventory:
-  - item: {fileID: 6126209819148601056}
-    count: 1
+  m_inventory: []
   maxHp: 50
   m_currentHp: 50
   hpReduceRate: 10

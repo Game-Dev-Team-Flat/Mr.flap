@@ -5,6 +5,27 @@ using UnityEngine;
 public class EntityInfo : MonoBehaviour
 {
     public Inventory[] inventory;
+    private int m_inventorySlotNumber;
+    // 인벤토리의 슬롯 넘버를 제한
+    public int inventorySlotNumber
+    {
+        get => m_inventorySlotNumber;
+        set
+        {
+            if (value < 0)
+            {
+                m_inventorySlotNumber = inventory.Length - 1;
+            }
+            else if (value >= inventory.Length)
+            {
+                m_inventorySlotNumber = 0;
+            }
+            else
+            {
+                m_inventorySlotNumber = value;
+            }
+        }
+    }
     public float maxHp;
     [SerializeField]
     private float m_currentHp;

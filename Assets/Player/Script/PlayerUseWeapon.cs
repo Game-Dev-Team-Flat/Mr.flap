@@ -17,14 +17,17 @@ public class PlayerUseWeapon : UseWeapon
 
     private void Update()
     {
-        standardObjectOfShot = playerInfo.inventory[playerInfo.inventorySlotNumber].item.transform.Find("Fire Point");
         GameObject itemHand = playerInventoryManager.itemHand;
-        if (itemHand.tag == "Weapon")
+        if (itemHand.CompareTag("Weapon"))
         {
+            SetFirePoint(itemHand);
+
             inputReload = Input.GetKeyDown(playerInfo.reloadKey);
 
             startFire = ActiveStartFire(itemHand);
             stopFire = ActiveStopFire(itemHand);
+
+            Debug.DrawRay(standardObjectOfShot.position, standardObjectOfShot.forward);
 
             if (itemHand.TryGetComponent(out RocketLauncher rocketLauncher) && rocketLauncher.currentAmmo > 0 && startFire)
             {
@@ -134,7 +137,7 @@ public class PlayerUseWeapon : UseWeapon
 
     private bool ActiveStopFire(GameObject weapon)
     {
-        if (weapon.TryGetComponent(out ChargingGun chargingGun))
+        if (weapon.TryGetComponent(out ChargingGun _))
         {
             return false;
         }
@@ -160,5 +163,13 @@ public class PlayerUseWeapon : UseWeapon
             yield return new WaitForFixedUpdate();
         }
         isCharged = true;
+    }
+
+    private void SetFirePoint(GameObject itemHand)
+    {
+        if (standardObjectOfShot == null)
+        {
+            standardObjectOfShot = itemHand.transform.Find("Fire Point");
+        }
     }
 }

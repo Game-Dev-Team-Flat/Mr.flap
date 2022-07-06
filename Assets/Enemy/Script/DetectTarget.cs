@@ -98,7 +98,7 @@ public class DetectTarget : MonoBehaviour
     private GameObject[] FindGameObjectsWithLayer(LayerMask target)
     {
         GameObject[] goArray = FindObjectsOfType(typeof(GameObject)) as GameObject[];
-        List<GameObject> goList = new List<GameObject>();
+        List<GameObject> goList = new();
         for (var i = 0; i < goArray.Length; i++)
         {
             if ((int)Mathf.Pow(2, goArray[i].layer) == target)

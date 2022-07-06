@@ -5,20 +5,36 @@ using UnityEngine;
 public class EntityInfo : MonoBehaviour
 {
     [SerializeField]
-    private Transform m_eyesOfObject;
-    public Inventory[] inventory;
-    public float maxHp;
+    private Inventory[] m_inventory;
+    private int m_inventorySlotNumber;
+    [SerializeField]
+    private float maxHp;
     [SerializeField]
     private float m_currentHp;
-    public float currentHp { get => m_currentHp; set => m_currentHp = value < 0 ? 0 : value; }
     public float hpReduceRate;
     public float takenDamage;
-    public Transform eyesOfObject => m_eyesOfObject;
 
-    private void Awake()
+    public Inventory[] inventory => m_inventory;
+    public int inventorySlotNumber // 인벤토리의 슬롯 넘버를 제한
     {
-        currentHp = maxHp;
+        get => m_inventorySlotNumber;
+        set
+        {
+            if (value < 0)
+            {
+                m_inventorySlotNumber = inventory.Length - 1;
+            }
+            else if (value >= inventory.Length)
+            {
+                m_inventorySlotNumber = 0;
+            }
+            else
+            {
+                m_inventorySlotNumber = value;
+            }
+        }
     }
+    public float currentHp { get => m_currentHp; set => m_currentHp = value < 0 ? 0 : value; }
 
     private void Update()
     {

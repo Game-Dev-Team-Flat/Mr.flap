@@ -18,78 +18,82 @@ public class PlayerUseWeapon : UseWeapon
     private void Update()
     {
         GameObject itemHand = playerInventoryManager.itemHand;
-        if (itemHand.tag == "Weapon")
+        if (itemHand.CompareTag("Weapon"))
         {
+            SetFirePoint(itemHand);
+
             inputReload = Input.GetKeyDown(playerInfo.reloadKey);
 
             startFire = ActiveStartFire(itemHand);
             stopFire = ActiveStopFire(itemHand);
 
-            if (itemHand.TryGetComponent(out RocketLauncher _rocketLauncher) && _rocketLauncher.currentAmmo > 0 && startFire)
+            Debug.DrawRay(standardObjectOfShot.position, standardObjectOfShot.forward);
+
+            if (itemHand.TryGetComponent(out RocketLauncher rocketLauncher) && rocketLauncher.currentAmmo > 0 && startFire)
             {
-                Instantiate(_rocketLauncher.rocket, playerInfo.eyesOfObject.position + playerInfo.eyesOfObject.forward * 1f + playerInfo.eyesOfObject.up * -0.3f + playerInfo.eyesOfObject.right * 0.3f, playerInfo.eyesOfObject.rotation);
+                Instantiate(rocketLauncher.rocket, playerInfo.eyesOfObject.position + playerInfo.eyesOfObject.forward * 1f + playerInfo.eyesOfObject.up * -0.3f + playerInfo.eyesOfObject.right * 0.3f, playerInfo.eyesOfObject.rotation);
             }
-            if (itemHand.TryGetComponent(out Gun _gun))
+            if (itemHand.TryGetComponent(out Gun gun))
             {
-                WeaponAction(_gun);
+                WeaponAction(gun);
             }
-            if (itemHand.TryGetComponent(out Knife _knife))
+            if (itemHand.TryGetComponent(out Knife knife))
             {
-                WeaponAction(_knife);
+                WeaponAction(knife);
             }
 
-            if (Input.GetKeyDown(playerInfo.changeShotModeKey) && _gun != null)
+            if (Input.GetKeyDown(playerInfo.changeShotModeKey) && gun != null)
             {
-                ChangeShotMode(_gun);
+                ChangeShotMode(gun);
             }
         }
     }
 
-    private void ChangeShotMode(Gun _gun)
+    private void ChangeShotMode(Gun gun)
     {
-        if (_gun.currentShotMode == Gun.ShotMode.Semiauto)
+        if (gun.currentShotMode == Gun.ShotMode.Semiauto)
         {
-            if ((int)_gun.shotMode / 2 % 2 != 0)
+            if ((int)gun.shotMode / 2 % 2 != 0)
             {
-                _gun.currentShotMode = Gun.ShotMode.Auto;
+                gun.currentShotMode = Gun.ShotMode.Auto;
             }
-            else if ((int)_gun.shotMode / 4 % 2 != 0)
+            else if ((int)gun.shotMode / 4 % 2 != 0)
             {
-                _gun.currentShotMode = Gun.ShotMode.Burst;
+                gun.currentShotMode = Gun.ShotMode.Burst;
             }
         }
-        if (_gun.currentShotMode == Gun.ShotMode.Auto)
+        if (gun.currentShotMode == Gun.ShotMode.Auto)
         {
-            if ((int)_gun.shotMode / 4 % 2 != 0)
+            if ((int)gun.shotMode / 4 % 2 != 0)
             {
-                _gun.currentShotMode = Gun.ShotMode.Burst;
+                gun.currentShotMode = Gun.ShotMode.Burst;
             }
-            else if ((int)_gun.shotMode % 2 != 0)
+            else if ((int)gun.shotMode % 2 != 0)
             {
-                _gun.currentShotMode = Gun.ShotMode.Semiauto;
+                gun.currentShotMode = Gun.ShotMode.Semiauto;
             }
 
         }
-        if (_gun.currentShotMode == Gun.ShotMode.Burst)
+        if (gun.currentShotMode == Gun.ShotMode.Burst)
         {
-            if ((int)_gun.shotMode % 2 != 0)
+            if ((int)gun.shotMode % 2 != 0)
             {
-                _gun.currentShotMode = Gun.ShotMode.Semiauto;
+                gun.currentShotMode = Gun.ShotMode.Semiauto;
             }
-            else if ((int)_gun.shotMode / 2 % 2 != 0)
+            else if ((int)gun.shotMode / 2 % 2 != 0)
             {
-                _gun.currentShotMode = Gun.ShotMode.Auto;
+                gun.currentShotMode = Gun.ShotMode.Auto;
             }
         }
     }
 
-    private bool ActiveStartFire(GameObject _weapon)
+    private bool ActiveStartFire(GameObject weapon)
     {
-        if (_weapon.TryGetComponent(out ChargingGun _chargingGun))
+        if (weapon.TryGetComponent(out ChargingGun chargingGun))
         {
             if (Input.GetMouseButtonDown(0))
             {
-                StartCoroutine("Charging", _chargingGun.chargeTime);
+                StartCoroutine("Charging", chargingGun.chargeTime);
             }
 
             if ((Input.GetMouseButton(0) || Input.GetMouseButtonUp(0)) && !isReload)
@@ -131,9 +135,9 @@ public class PlayerUseWeapon : UseWeapon
         }
     }
 
-    private bool ActiveStopFire(GameObject _weapon)
+    private bool ActiveStopFire(GameObject weapon)
     {
-        if (_weapon.TryGetComponent(out ChargingGun _chargingGun))
+        if (weapon.TryGetComponent(out ChargingGun _))
         {
             return false;
         }
@@ -150,14 +154,22 @@ public class PlayerUseWeapon : UseWeapon
         }
     }
 
-    private IEnumerator Charging(float _chargeTime)
+    private IEnumerator Charging(float chargeTime)
     {
-        float _chargingTime = 0;
-        while (_chargingTime < _chargeTime)
+        float chargingTime = 0;
+        while (chargingTime < chargeTime)
         {
-            _chargingTime += Time.deltaTime;
+            chargingTime += Time.deltaTime;
             yield return new WaitForFixedUpdate();
         }
         isCharged = true;
+    }
+
+    private void SetFirePoint(GameObject itemHand)
+    {
+        if (standardObjectOfShot == null)
+        {
+            standardObjectOfShot = itemHand.transform.Find("Fire Point");
+        }
     }
 }

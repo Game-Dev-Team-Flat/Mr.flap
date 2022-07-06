@@ -85,7 +85,8 @@ namespace Enemy
             DetectingSomthing,
             DetectingTarget,
             MissingTargetSideways,
-            TargetOverDetectingDistance
+            TargetOverDetectingDistance,
+            TargetHindInObject
         }
 
         private void Awake()
@@ -111,10 +112,8 @@ namespace Enemy
                     detectedTime += detectTarget.detectionDistance / Vector3.Distance(transform.position, detectTarget.detectedObject.transform.position) * Time.deltaTime;
                     return EnemyState.DetectingSomthing;
                 }
-                else
-                {
-                    return EnemyState.DetectingTarget;
-                }
+
+                return EnemyState.DetectingTarget;
             }
             else // 발견이 안되면
             {
@@ -123,17 +122,28 @@ namespace Enemy
                     detectedTime -= Time.deltaTime / 2f;
                     return EnemyState.DetectingSomthing;
                 }
-                else if (detectedTime > 0f &&
-                    (m_enemyState == EnemyState.DetectingTarget || m_enemyState == EnemyState.MissingTargetSideways || m_enemyState == EnemyState.TargetOverDetectingDistance))
+                else if (m_enemyState == EnemyState.DetectingTarget)
                 {
                     if (Vector3.Distance(transform.position, targetObject.transform.position) < detectTarget.detectionDistance)
                     {
-                        return EnemyState.MissingTargetSideways;
+                        Physics.Raycast(transform.position, (targetObject.transform.position - transform.position).normalized, out RaycastHit raycastHit);
+                        if ((int)Mathf.Pow(2, raycastHit.transform.gameObject.layer) == detectTarget.targetLayerMask)
+                        {
+                            return EnemyState.MissingTargetSideways;
+                        }
+                        else
+                        {
+                            return EnemyState.TargetHindInObject; // 이 상태 구현
+                        }
                     }
                     else
                     {
                         return EnemyState.TargetOverDetectingDistance;
                     }
+                }
+                else if ((m_enemyState == EnemyState.MissingTargetSideways || m_enemyState == EnemyState.TargetOverDetectingDistance || m_enemyState == EnemyState.TargetHindInObject) && detectedTime > 0f)
+                {
+                    return m_enemyState;
                 }
                 else
                 {
@@ -165,6 +175,9 @@ namespace Enemy
                     LookAtTarget(targetObject.transform.position);
                     break;
                 case EnemyState.TargetOverDetectingDistance:
+                    ChaseTarget(LastDetectedPosition);
+                    break;
+                case EnemyState.TargetHindInObject:
                     ChaseTarget(LastDetectedPosition);
                     break;
                 default:
@@ -204,7 +217,7 @@ namespace Enemy
         private void LookAtTarget(Vector3 target)
         {
             navMeshAgent.speed = 0f;
-            Quaternion targetRotation = Quaternion.LookRotation(target - transform.position);
+            Quaternion targetRotation = Quaternion.LookRotation(target - transform.position - Vector3.up * target.y + Vector3.up * transform.position.y);
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * navMeshAgent.angularSpeed / 180f);
         }

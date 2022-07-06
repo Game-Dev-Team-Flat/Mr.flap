@@ -90,7 +90,7 @@ namespace Weapon
                         break;
                 }
             }
-            if (gun.autoReload && gun.currentAmmo <= 0)
+            if (gun.autoReload && gun.currentAmmo <= 0 && !isReload)
             {
                 StartCoroutine("OnReload", gun);
             }

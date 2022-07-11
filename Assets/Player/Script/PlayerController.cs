@@ -4,7 +4,18 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private CharacterController characterController;
+    private CharacterController m_characterController;
+    private CharacterController characterController
+    {
+        get
+        {
+            if (m_characterController == null)
+            {
+                m_characterController = GetComponent<CharacterController>();
+            }
+            return m_characterController;
+        }
+    }
     public float gravityDownForce;
     [Header("-Camera Setting")]
     [SerializeField]
@@ -17,7 +28,18 @@ public class PlayerController : MonoBehaviour
     private float dashFov;
     [SerializeField]
     private float chopdriverFov;
-    private CameraFov cameraFov;
+    private CameraFov m_cameraFov;
+    private CameraFov cameraFov
+    {
+        get
+        {
+            if (m_cameraFov == null)
+            {
+                m_cameraFov = playerCamera.GetComponent<CameraFov>();
+            }
+            return m_cameraFov;
+        }
+    }
 
     [Header("-HookShot")]
     [SerializeField]
@@ -44,7 +66,26 @@ public class PlayerController : MonoBehaviour
     public int extraJumpCount;
     public float addExtraJumpCoolTime;
     private bool isAddExtraJumpCoolTime;
-    private int jumpCount;
+    private int m_jumpCount;
+    private int jumpCount // jumpCount를 0이상, extraJumpCount + 1 이하로 제한
+    {
+        get => m_jumpCount;
+        set
+        {
+            if (value < 0)
+            {
+                m_jumpCount = 0;
+            }
+            else if (value > extraJumpCount + 1)
+            {
+                m_jumpCount = extraJumpCount + 1;
+            }
+            else
+            {
+                m_jumpCount = value;
+            }
+        }
+    }
     private bool isJump = false;
 
     [Header("-Move")]
@@ -71,6 +112,19 @@ public class PlayerController : MonoBehaviour
     public float chopDriverCoolTime;
     public float chopDriverForce;
 
+    private PlayerParticleManager m_playerParticleManager;
+    private PlayerParticleManager playerParticleManager
+    {
+        get
+        {
+            if (m_playerParticleManager == null)
+            {
+                m_playerParticleManager = GetComponent<PlayerParticleManager>();
+            }
+            return m_playerParticleManager;
+        }
+    }
+
     public enum State
     {
         Normal,
@@ -82,8 +136,6 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        cameraFov = Camera.main.GetComponent<CameraFov>();
-        characterController = GetComponent<CharacterController>();
         hookshotTransform.gameObject.SetActive(false);
     }
 
@@ -155,15 +207,20 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            if (jumpCount == 0) jumpCount = 1;
+            if (jumpCount == 0)
+            {
+                jumpCount = 1;
+            }
             isJump = true;
         }
 
         if (Input.GetKeyDown(KeyCode.Space) && (!isJump || jumpCount <= extraJumpCount))
         {
+            //playerParticleManager.InjectAir(Quaternion.LookRotation(Vector3.down));
             characterVelocityY = jumpForce;
             jumpCount++;
         }
+
         ExtraJump();
     }
 
@@ -176,7 +233,7 @@ public class PlayerController : MonoBehaviour
         }
         if (!isAddExtraJumpCoolTime)
         {
-            if (jumpCount == (extraJumpCount + 1))
+            if (jumpCount > 0)
             {
                 StartCoroutine("AddExtraJump", addExtraJumpCoolTime);
             }
@@ -282,6 +339,7 @@ public class PlayerController : MonoBehaviour
         {
             if (canDash)
             {
+                //playerParticleManager.InjectAir(Quaternion.LookRotation(-dashCharacterVelocity));
                 cameraFov.SetCameraFov(dashFov);
                 StartCoroutine(DashMovement(dashDurationTime, dashCharacterVelocity));
                 StartCoroutine(DashReload(dashCoolTime));

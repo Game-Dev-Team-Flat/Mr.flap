@@ -18,6 +18,7 @@ public class PlayerUseWeapon : UseWeapon
     private void Update()
     {
         GameObject itemHand = playerInventoryManager.itemHand;
+        
         if (itemHand.CompareTag("Weapon"))
         {
             SetFirePoint(itemHand);

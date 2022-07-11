@@ -389,7 +389,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49af033c5f49bf642b005bd76f61213d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  standardObjectOfShot: {fileID: 3300005494320368521}
+  standardObjectOfShot: {fileID: 0}
   targetLayerMask:
     serializedVersion: 2
     m_Bits: 320

@@ -7,21 +7,50 @@ namespace Enemy
 {
     public class EnemyUseWeapon : UseWeapon
     {
-        [SerializeField]
-        private EnemyController enemyController;
-        private DetectTarget detectTarget;
+        private EnemyController m_enemyController;
+        private DetectTarget m_detectTarget;
+        private EntityInfo m_enemyInfo;
+
+        private EnemyController enemyController
+        {
+            get
+            {
+                if (m_enemyController == null)
+                {
+                    m_enemyController = GetComponent<EnemyController>();
+                }
+                return m_enemyController;
+            }
+            set => m_enemyController = value;
+        }
+        private DetectTarget detectTarget
+        {
+            get
+            {
+                if (m_detectTarget == null)
+                {
+                    m_detectTarget = GetComponent<DetectTarget>();
+                }
+                return m_detectTarget;
+            }
+            set => m_detectTarget = value;
+        }
+        private EntityInfo enemyInfo
+        {
+            get
+            {
+                if (m_enemyInfo == null)
+                {
+                    m_enemyInfo = GetComponent<EntityInfo>();
+                }
+                return m_enemyInfo;
+            }
+            set => m_enemyInfo = value;
+        }
         [SerializeField]
         private float shootAngle;
         [SerializeField]
         private float shootDistance;
-        [SerializeField]
-        private EntityInfo enemyInfo;
-
-        private void Awake()
-        {
-            detectTarget = GetComponent<DetectTarget>();
-            enemyController = GetComponent<EnemyController>();
-        }
 
         private void Update()
         {
@@ -44,7 +73,7 @@ namespace Enemy
 
                 float targetRadian = Vector3.Dot(standardObjectOfShot.forward, (enemyController.targetObject.transform.position - transform.position).normalized);
 
-                if (radianRange > targetRadian && Vector3.Distance(enemyController.targetObject.transform.position, transform.position) < shootDistance)
+                if (radianRange < targetRadian && Vector3.Distance(enemyController.targetObject.transform.position, transform.position) < shootDistance)
                 {
                     return true;
                 }

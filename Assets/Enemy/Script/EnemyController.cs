@@ -14,6 +14,8 @@ namespace Enemy
         [SerializeField]
         TextMeshPro state;
         [SerializeField]
+        TextMeshPro healthPoint;
+        [SerializeField]
         private DetectTarget detectTarget;
         [SerializeField]
         private float normalSpeed;
@@ -97,6 +99,7 @@ namespace Enemy
         private void Update()
         {
             state.text = enemyState.ToString();
+            healthPoint.text = GetComponent<EntityInfo>().currentHp.ToString();
 
             m_enemyState = DetermineState();
             detectTarget.SearchTarget(detectTarget.targetLayerMask);
@@ -117,23 +120,23 @@ namespace Enemy
             }
             else // 발견이 안되면
             {
-                if (m_enemyState == EnemyState.DetectingSomthing && detectedTime > 0f) // 자꾸 DetectTarget이 Null값이 되는 버그
+                if (m_enemyState == EnemyState.DetectingSomthing && detectedTime > 0f)
                 {
-                    detectedTime -= Time.deltaTime / 2f;
+                    ReduceDetectedTime(0.5f);
                     return EnemyState.DetectingSomthing;
                 }
                 else if (m_enemyState == EnemyState.DetectingTarget)
                 {
                     if (Vector3.Distance(transform.position, targetObject.transform.position) < detectTarget.detectionDistance)
                     {
-                        Physics.Raycast(transform.position, (targetObject.transform.position - transform.position).normalized, out RaycastHit raycastHit);
-                        if ((int)Mathf.Pow(2, raycastHit.transform.gameObject.layer) == detectTarget.targetLayerMask)
+                        if(Physics.Raycast(transform.position, (targetObject.transform.position - transform.position).normalized, out RaycastHit raycastHit) &&
+                           (int)Mathf.Pow(2, raycastHit.transform.gameObject.layer) != detectTarget.targetLayerMask)
                         {
-                            return EnemyState.MissingTargetSideways;
+                            return EnemyState.TargetHindInObject;
                         }
                         else
                         {
-                            return EnemyState.TargetHindInObject; // 이 상태 구현
+                            return EnemyState.MissingTargetSideways;
                         }
                     }
                     else
@@ -147,7 +150,7 @@ namespace Enemy
                 }
                 else
                 {
-                    detectedTime -= Time.deltaTime;
+                    ReduceDetectedTime(1f);
                     return EnemyState.DetectingNothing;
                 }
             }
@@ -205,7 +208,7 @@ namespace Enemy
             navMeshAgent.destination = targetPosition;
             if (Vector3.Distance(transform.position - Vector3.up * transform.position.y, targetPosition - Vector3.up * targetPosition.y) < 1f)
             {
-                detectedTime -= Time.deltaTime;
+                ReduceDetectedTime(1f);
             }
         }
 
@@ -220,6 +223,11 @@ namespace Enemy
             Quaternion targetRotation = Quaternion.LookRotation(target - transform.position - Vector3.up * target.y + Vector3.up * transform.position.y);
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * navMeshAgent.angularSpeed / 180f);
+        }
+
+        private void ReduceDetectedTime(float declineSpeed)
+        {
+            detectedTime -= Time.deltaTime * declineSpeed;
         }
     }
 }

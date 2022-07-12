@@ -75,23 +75,22 @@ public class DetectTarget : MonoBehaviour
             }
 
             Debug.DrawRay(transform.position, (targetObjects[i].transform.position - transform.position).normalized * detectionDistance);
-            
-            if (Physics.Raycast(transform.position, (targetObjects[i].transform.position - transform.position).normalized, out RaycastHit raycastHitCollider, detectionDistance))
-            {
-                if (((int)Mathf.Pow(2, raycastHitCollider.transform.gameObject.layer) & targetLayerMask) != 0)
-                {
-                    Debug.Log("Detect Tagert!");
-                    detectedObject = targetObjects[i];
-                }
-                else
-                {
-                    detectedObject = null;
-                }
-            }
-            else
+
+            if (Physics.Raycast(transform.position, (targetObjects[i].transform.position - transform.position).normalized, out RaycastHit raycastHitCollider, detectionDistance) &&
+                ((int)Mathf.Pow(2, raycastHitCollider.transform.gameObject.layer) & targetLayerMask) == 0)
             {
                 detectedObject = null;
+                return;
             }
+
+            if (Vector3.Distance(transform.position, targetObjects[i].transform.position) > detectionDistance)
+            {
+                detectedObject = null;
+                return;
+            }
+
+            Debug.Log("Detect Tagert!");
+            detectedObject = targetObjects[i];
         }
     }
 

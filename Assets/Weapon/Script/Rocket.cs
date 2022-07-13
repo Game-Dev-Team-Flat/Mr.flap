@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Weapon
+namespace Item.Weapon
 {
     public class Rocket : Boom
     {

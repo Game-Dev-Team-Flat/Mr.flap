@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Weapon
+namespace Item.Weapon
 {
     public class Boom : MonoBehaviour
     {
@@ -35,7 +35,7 @@ namespace Weapon
             RaycastHit[] objectsHit = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, ~LayerMask.GetMask("Floor"));
             foreach (RaycastHit objectHit in objectsHit)
             {
-                if (Physics.Raycast(transform.position, (objectHit.transform.position - transform.position).normalized, out RaycastHit raycastHit, float.MaxValue, ~LayerMask.GetMask("Floor")))
+                if (Physics.Raycast(transform.position, (objectHit.transform.position - transform.position).normalized, out _, float.MaxValue, ~LayerMask.GetMask("Floor")))
                 {
                     if (objectHit.transform.TryGetComponent(out EntityInfo entityInfo))
                     {

@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Weapon;
+using Item.Weapon;
 
 public class PlayerUseWeapon : UseWeapon
 {
@@ -38,9 +38,9 @@ public class PlayerUseWeapon : UseWeapon
             {
                 WeaponAction(gun);
             }
-            if (itemHand.TryGetComponent(out Knife knife))
+            if (itemHand.TryGetComponent(out MeleeWeapon meleeWeapon))
             {
-                WeaponAction(knife);
+                WeaponAction(meleeWeapon);
             }
 
             if (Input.GetKeyDown(playerInfo.changeShotModeKey) && gun != null)

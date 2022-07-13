@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Weapon
+namespace Item.Weapon
 {
     public class Gun : MonoBehaviour
     {
@@ -18,7 +18,7 @@ namespace Weapon
         [EnumFlags]
         public ShotMode shotMode;
         public ShotMode currentShotMode;
-        
+
         public enum ShotMode
         {
             Semiauto = 1,

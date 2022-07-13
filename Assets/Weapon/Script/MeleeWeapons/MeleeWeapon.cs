@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace Weapon
+namespace Item.Weapon
 {
-    public class Knife : MonoBehaviour
+    public class MeleeWeapon : MonoBehaviour
     {
         public float attackRate;
         public float range;

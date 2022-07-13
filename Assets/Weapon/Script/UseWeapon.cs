@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Weapon
+namespace Item.Weapon
 {
     public class UseWeapon : MonoBehaviour
     {
@@ -50,15 +50,15 @@ namespace Weapon
             }
         }
 
-        protected void WeaponAction(Knife knife)
+        protected void WeaponAction(MeleeWeapon meleeWeapon)
         {
             if (startFire)
             {
-                StartCoroutine("KnifeAction");
+                StartCoroutine("MeleeAction");
             }
             else if (stopFire)
             {
-                StopCoroutine("KnifeAction");
+                StopCoroutine("MeleeAction");
             }
         }
 
@@ -96,11 +96,11 @@ namespace Weapon
             }
         }
 
-        private IEnumerator KnifeAction(Knife knife)
+        private IEnumerator MeleeAction(MeleeWeapon meleeWeapon)
         {
             while (true)
             {
-                Stab(knife);
+                Stab(meleeWeapon);
                 yield return null;
             }
         }
@@ -117,12 +117,12 @@ namespace Weapon
             }
         }
 
-        private void Stab(Knife knife)
+        private void Stab(MeleeWeapon meleeWeapon)
         {
-            if (Time.time - lastFireTime > knife.attackRate)
+            if (Time.time - lastFireTime > meleeWeapon.attackRate)
             {
                 Debug.Log("Stab");
-                Hit(knife.damage, knife.range);
+                Hit(meleeWeapon.damage, meleeWeapon.range);
                 lastFireTime = Time.time;
             }
         }

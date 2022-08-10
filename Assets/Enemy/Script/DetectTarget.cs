@@ -10,6 +10,10 @@ public class DetectTarget : MonoBehaviour
     private float m_detectionDistance;
     [SerializeField]
     private LayerMask m_targetLayerMask;
+    [SerializeField]
+    private string targetTag;
+    [SerializeField]
+    private LayerMask m_ignoreLayerMask;
     public bool useDetectingArea;
     [HideInInspector]
     public GameObject detectingArea;
@@ -23,7 +27,7 @@ public class DetectTarget : MonoBehaviour
         {
             if (m_targetObjects == null)
             {
-                m_targetObjects = FindGameObjectsWithLayer(m_targetLayerMask);
+                m_targetObjects = GameObject.FindGameObjectsWithTag(targetTag);
             }
             return m_targetObjects;
         }
@@ -49,6 +53,14 @@ public class DetectTarget : MonoBehaviour
         }
     }
     public LayerMask targetLayerMask => m_targetLayerMask;
+    public LayerMask ignoreLayerMask => m_ignoreLayerMask;
+
+    public enum DetectingState
+    {
+        DetectingNothing,
+        TargetInDetectingArea,
+        DetectingTarget
+    }
     
 
     private void OnDrawGizmos()
@@ -60,38 +72,41 @@ public class DetectTarget : MonoBehaviour
         }
     }
 
-    public void SearchTarget(LayerMask targetLayerMask)
+    public DetectingState SearchTarget()
     {
         float radianRange = Mathf.Cos(detectionAngle / 2 * Mathf.Deg2Rad);
 
-        for (int i = 0; i < targetObjects.Length; i++)
+        foreach (GameObject v in targetObjects)
         {
-            float targetRadian = Vector3.Dot(transform.forward, (targetObjects[i].transform.position - transform.position).normalized);
+            float targetRadian = Vector3.Dot(transform.forward, (v.transform.position - transform.position).normalized);
 
             if (targetRadian < radianRange)
             {
                 detectedObject = null;
-                return;
+                return DetectingState.DetectingNothing;
             }
 
-            Debug.DrawRay(transform.position, (targetObjects[i].transform.position - transform.position).normalized * detectionDistance);
+            Debug.DrawRay(transform.position, (v.transform.position - transform.position).normalized * detectionDistance);
 
-            if (Physics.Raycast(transform.position, (targetObjects[i].transform.position - transform.position).normalized, out RaycastHit raycastHitCollider, detectionDistance) &&
+            if (Vector3.Distance(transform.position, v.transform.position) > detectionDistance)
+            {
+                detectedObject = null;
+                return DetectingState.TargetInDetectingArea;
+            }
+
+            if (Physics.Raycast(transform.position, (v.transform.position - transform.position).normalized, out RaycastHit raycastHitCollider, detectionDistance, ~(ignoreLayerMask | Physics.IgnoreRaycastLayer)) &&
                 ((int)Mathf.Pow(2, raycastHitCollider.transform.gameObject.layer) & targetLayerMask) == 0)
             {
                 detectedObject = null;
-                return;
-            }
-
-            if (Vector3.Distance(transform.position, targetObjects[i].transform.position) > detectionDistance)
-            {
-                detectedObject = null;
-                return;
+                return DetectingState.TargetInDetectingArea;
             }
 
             Debug.Log("Detect Tagert!");
-            detectedObject = targetObjects[i];
+            detectedObject = v;
+            return DetectingState.DetectingTarget;
         }
+
+        return DetectingState.DetectingNothing;
     }
 
     private GameObject[] FindGameObjectsWithLayer(LayerMask target)

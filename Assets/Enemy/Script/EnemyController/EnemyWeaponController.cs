@@ -5,13 +5,16 @@ using Item.Weapon;
 
 namespace Enemy
 {
-    public class EnemyUseWeapon : UseWeapon
+    public class EnemyWeaponController : MonoBehaviour
     {
         private EnemyController m_enemyController;
         private DetectTarget m_detectTarget;
         private EntityInfo m_enemyInfo;
+        private UseWeapon m_enemyWeapon;
 
-        private EnemyController enemyController
+        [SerializeField]
+        protected bool isTargeting;
+        protected EnemyController enemyController
         {
             get
             {
@@ -23,7 +26,7 @@ namespace Enemy
             }
             set => m_enemyController = value;
         }
-        private DetectTarget detectTarget
+        protected DetectTarget detectTarget
         {
             get
             {
@@ -35,7 +38,7 @@ namespace Enemy
             }
             set => m_detectTarget = value;
         }
-        private EntityInfo enemyInfo
+        protected EntityInfo enemyInfo
         {
             get
             {
@@ -48,32 +51,49 @@ namespace Enemy
             set => m_enemyInfo = value;
         }
         [SerializeField]
-        private float shootAngle;
+        protected float shotAngle;
         [SerializeField]
-        private float shootDistance;
-
-        private void Update()
+        protected float shotDistance;
+        protected UseWeapon enemyWeapon
         {
-            Targeting();
-
-            startFire = IsInFireArea();
-            stopFire = !IsInFireArea();
-
-            if (enemyInfo.inventory[0].item.TryGetComponent(out Gun gun))
+            get
             {
-                WeaponAction(gun);
+                if (m_enemyWeapon == null)
+                {
+                    m_enemyWeapon = enemyInfo.inventory[0].item.GetComponent<UseWeapon>();
+                }
+                return m_enemyWeapon;
             }
         }
 
-        private bool IsInFireArea()
+        private void OnDrawGizmos()
+        {
+            Gizmos.DrawRay(enemyWeapon.standardObjectOfShot.transform.position, EulerToVector( shotAngle / 2) * shotDistance);
+            Gizmos.DrawRay(enemyWeapon.standardObjectOfShot.transform.position, EulerToVector(-shotAngle / 2) * shotDistance);
+        }
+
+        protected virtual void Update()
+        {
+            if (isTargeting)
+            {
+                Targeting();
+            }
+
+            enemyWeapon.startFire = IsInFireArea();
+            enemyWeapon.stopFire = !IsInFireArea();
+
+            enemyWeapon.WeaponAction();
+        }
+
+        protected bool IsInFireArea()
         {
             if (detectTarget.detectedObject != null && enemyController.enemyState == EnemyController.EnemyState.DetectingTarget)
             {
-                float radianRange = Mathf.Cos(shootAngle / 2 * Mathf.Deg2Rad);
+                float radianRange = Mathf.Cos(shotAngle / 2 * Mathf.Deg2Rad);
 
-                float targetRadian = Vector3.Dot(standardObjectOfShot.forward, (enemyController.targetObject.transform.position - transform.position).normalized);
+                float targetRadian = Vector3.Dot(enemyWeapon.standardObjectOfShot.forward, (enemyController.targetObject.transform.position - transform.position).normalized);
 
-                if (radianRange < targetRadian && Vector3.Distance(enemyController.targetObject.transform.position, transform.position) < shootDistance)
+                if (radianRange < targetRadian && Vector3.Distance(enemyController.targetObject.transform.position, transform.position) < shotDistance)
                 {
                     return true;
                 }
@@ -88,7 +108,7 @@ namespace Enemy
             }
         }
 
-        private void Targeting()
+        protected void Targeting()
         {
             if (detectTarget.detectedObject != null)
             {
@@ -104,6 +124,13 @@ namespace Enemy
                 Quaternion targetRotation = Quaternion.Euler(new Vector3(0, enemyInfo.inventory[0].item.transform.eulerAngles.y, enemyInfo.inventory[0].item.transform.eulerAngles.z));
                 enemyInfo.inventory[0].item.transform.rotation = Quaternion.Slerp(enemyInfo.inventory[0].item.transform.rotation, targetRotation, Time.deltaTime * rotateSpeed);
             }
+        }
+
+        private Vector3 EulerToVector(float degree)
+        {
+            degree += transform.eulerAngles.y;
+            degree *= Mathf.Deg2Rad;
+            return new Vector3(Mathf.Sin(degree), 0, Mathf.Cos(degree));
         }
     }
 }

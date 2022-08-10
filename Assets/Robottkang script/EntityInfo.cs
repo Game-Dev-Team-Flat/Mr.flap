@@ -13,6 +13,7 @@ public class EntityInfo : MonoBehaviour
     private float m_currentHp;
     public float hpReduceRate;
     public float takenDamage;
+    public Effect effect;
 
     public Inventory[] inventory => m_inventory;
     public int inventorySlotNumber // 인벤토리의 슬롯 넘버를 제한
@@ -35,6 +36,11 @@ public class EntityInfo : MonoBehaviour
         }
     }
     public float currentHp { get => m_currentHp; set => m_currentHp = value < 0 ? 0 : value; }
+    
+    public struct Effect
+    {
+        public float stun;
+    }
 
     private void Update()
     {

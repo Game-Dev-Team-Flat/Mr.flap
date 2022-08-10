@@ -9,6 +9,9 @@ namespace Enemy
     public class EnemyController : MonoBehaviour
     {
         [SerializeField]
+        private Transform path;
+        [Space(20)]
+        [SerializeField]
         TextMeshPro state;
         [SerializeField]
         private DetectTarget detectTarget;
@@ -16,30 +19,28 @@ namespace Enemy
         private float normalSpeed;
         [SerializeField]
         private float runningSpeed;
-        private float m_detectingTime = 0f;
-        private float detectingTime // 0 이상 identifyingTime 이하로 제한
+        private float m_detectedTime = 0f;
+        private float detectedTime // 0 이상 identifyingTime 이하로 제한
         {
-            get => m_detectingTime;
+            get => m_detectedTime;
             set
             {
                 if (value < 0)
                 {
-                    m_detectingTime = 0;
+                    m_detectedTime = 0;
                 }
                 else if (value > identifyingTime)
                 {
-                    m_detectingTime = identifyingTime;
+                    m_detectedTime = identifyingTime;
                 }
                 else
                 {
-                    m_detectingTime = value;
+                    m_detectedTime = value;
                 }
             }
         }
         [SerializeField]
         private float identifyingTime;
-        [SerializeField]
-        private Transform path;
         private NavMeshAgent navMeshAgent;
         private int m_currentNode = 0;
         private int currentNode // 0부터 path.childCount까지 순환
@@ -62,10 +63,10 @@ namespace Enemy
                 }
             }
         }
-        private EnemyState m_enemyState = EnemyState.DetectedNothing;
+        private EnemyState m_enemyState = EnemyState.DetectingNothing;
         public EnemyState enemyState => m_enemyState;
         private GameObject m_targetObject;
-        private GameObject targetObject
+        public GameObject targetObject
         {
             get => m_targetObject;
             set
@@ -76,13 +77,16 @@ namespace Enemy
                 }
             }
         }
+        private Vector3 LastDetectedPosition;
 
         public enum EnemyState
         {
-            DetectedNothing,
-            DetectedSomthing,
-            DetectedTarget,
-            MissingTarget
+            DetectingNothing,
+            DetectingSomthing,
+            DetectingTarget,
+            MissingTargetSideways,
+            TargetOverDetectingDistance,
+            TargetHindInObject
         }
 
         private void Awake()
@@ -93,6 +97,7 @@ namespace Enemy
         private void Update()
         {
             state.text = enemyState.ToString();
+
             m_enemyState = DetermineState();
             detectTarget.SearchTarget(detectTarget.targetLayerMask);
             Movement();
@@ -100,28 +105,50 @@ namespace Enemy
 
         private EnemyState DetermineState()
         {
-            if (detectTarget.detectedObject != null)
+            if (detectTarget.detectedObject != null) // 발견되면
             {
-                if (m_enemyState != EnemyState.DetectedTarget && detectingTime < identifyingTime)
+                if (m_enemyState != EnemyState.DetectingTarget && detectedTime < identifyingTime)
                 {
-                    detectingTime += detectTarget.detectionDistance / Vector3.Distance(transform.position, detectTarget.detectedObject.transform.position) * Time.deltaTime;
-                    return EnemyState.DetectedSomthing;
+                    detectedTime += detectTarget.detectionDistance / Vector3.Distance(transform.position, detectTarget.detectedObject.transform.position) * Time.deltaTime;
+                    return EnemyState.DetectingSomthing;
                 }
-                else
-                {
-                    return EnemyState.DetectedTarget;
-                }
+
+                return EnemyState.DetectingTarget;
             }
-            else
+            else // 발견이 안되면
             {
-                if (detectingTime > 0f)
+                if (m_enemyState == EnemyState.DetectingSomthing && detectedTime > 0f) // 자꾸 DetectTarget이 Null값이 되는 버그
                 {
-                    detectingTime -= Time.deltaTime;
-                    return EnemyState.MissingTarget;
+                    detectedTime -= Time.deltaTime / 2f;
+                    return EnemyState.DetectingSomthing;
+                }
+                else if (m_enemyState == EnemyState.DetectingTarget)
+                {
+                    if (Vector3.Distance(transform.position, targetObject.transform.position) < detectTarget.detectionDistance)
+                    {
+                        Physics.Raycast(transform.position, (targetObject.transform.position - transform.position).normalized, out RaycastHit raycastHit);
+                        if ((int)Mathf.Pow(2, raycastHit.transform.gameObject.layer) == detectTarget.targetLayerMask)
+                        {
+                            return EnemyState.MissingTargetSideways;
+                        }
+                        else
+                        {
+                            return EnemyState.TargetHindInObject; // 이 상태 구현
+                        }
+                    }
+                    else
+                    {
+                        return EnemyState.TargetOverDetectingDistance;
+                    }
+                }
+                else if ((m_enemyState == EnemyState.MissingTargetSideways || m_enemyState == EnemyState.TargetOverDetectingDistance || m_enemyState == EnemyState.TargetHindInObject) && detectedTime > 0f)
+                {
+                    return m_enemyState;
                 }
                 else
                 {
-                    return EnemyState.DetectedNothing;
+                    detectedTime -= Time.deltaTime;
+                    return EnemyState.DetectingNothing;
                 }
             }
         }
@@ -131,18 +158,27 @@ namespace Enemy
             targetObject = detectTarget.detectedObject;
             switch (m_enemyState)
             {
-                case EnemyState.DetectedNothing:
+                case EnemyState.DetectingNothing:
                     Patrol();
                     break;
-                case EnemyState.DetectedTarget:
-                    ChaseTarget();
-                    break;
-                case EnemyState.DetectedSomthing:
+                case EnemyState.DetectingTarget:
+                    LookAtTarget(targetObject.transform.position);
                     StopNavMeshAgentMovement();
-                    LookAtTarget(targetObject.transform);
+                    LastDetectedPosition = targetObject.transform.position;
                     break;
-                case EnemyState.MissingTarget:
-                    LookAtTarget(targetObject.transform);
+                case EnemyState.DetectingSomthing:
+                    StopNavMeshAgentMovement();
+                    LookAtTarget(targetObject.transform.position);
+                    break;
+                case EnemyState.MissingTargetSideways:
+                    StopNavMeshAgentMovement();
+                    LookAtTarget(targetObject.transform.position);
+                    break;
+                case EnemyState.TargetOverDetectingDistance:
+                    ChaseTarget(LastDetectedPosition);
+                    break;
+                case EnemyState.TargetHindInObject:
+                    ChaseTarget(LastDetectedPosition);
                     break;
                 default:
                     StopNavMeshAgentMovement();
@@ -163,11 +199,14 @@ namespace Enemy
             }
         }
 
-        private void ChaseTarget()
+        private void ChaseTarget(Vector3 targetPosition)
         {
             navMeshAgent.speed = runningSpeed;
-            navMeshAgent.destination = (Vector3.Distance(transform.position, targetObject.transform.position) > 4f)
-                                        ? targetObject.transform.position : transform.position;
+            navMeshAgent.destination = targetPosition;
+            if (Vector3.Distance(transform.position - Vector3.up * transform.position.y, targetPosition - Vector3.up * targetPosition.y) < 1f)
+            {
+                detectedTime -= Time.deltaTime;
+            }
         }
 
         private void StopNavMeshAgentMovement()
@@ -175,10 +214,10 @@ namespace Enemy
             navMeshAgent.destination = transform.position;
         }
 
-        private void LookAtTarget(Transform target)
+        private void LookAtTarget(Vector3 target)
         {
             navMeshAgent.speed = 0f;
-            Quaternion targetRotation = Quaternion.LookRotation(target.position - transform.position);
+            Quaternion targetRotation = Quaternion.LookRotation(target - transform.position - Vector3.up * target.y + Vector3.up * transform.position.y);
 
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * navMeshAgent.angularSpeed / 180f);
         }

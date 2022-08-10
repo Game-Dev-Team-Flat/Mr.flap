@@ -4,7 +4,18 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private CharacterController characterController;
+    private CharacterController m_characterController;
+    private CharacterController characterController
+    {
+        get
+        {
+            if (m_characterController == null)
+            {
+                m_characterController = GetComponent<CharacterController>();
+            }
+            return m_characterController;
+        }
+    }
     public float gravityDownForce;
     [Header("-Camera Setting")]
     [SerializeField]
@@ -17,9 +28,22 @@ public class PlayerController : MonoBehaviour
     private float dashFov;
     [SerializeField]
     private float chopdriverFov;
-    private CameraFov cameraFov;
+    private CameraFov m_cameraFov;
+    private CameraFov cameraFov
+    {
+        get
+        {
+            if (m_cameraFov == null)
+            {
+                m_cameraFov = playerCamera.GetComponent<CameraFov>();
+            }
+            return m_cameraFov;
+        }
+    }
 
     [Header("-HookShot")]
+    [SerializeField]
+    private bool isUseHookShoot;
     public float hookShotMoveSpeedMin;
     public float hookShotMoveSpeedMax;
     public float hookShotLimitMaxDistance;
@@ -42,7 +66,26 @@ public class PlayerController : MonoBehaviour
     public int extraJumpCount;
     public float addExtraJumpCoolTime;
     private bool isAddExtraJumpCoolTime;
-    private int jumpCount;
+    private int m_jumpCount;
+    private int jumpCount // jumpCount를 0이상, extraJumpCount + 1 이하로 제한
+    {
+        get => m_jumpCount;
+        set
+        {
+            if (value < 0)
+            {
+                m_jumpCount = 0;
+            }
+            else if (value > extraJumpCount + 1)
+            {
+                m_jumpCount = extraJumpCount + 1;
+            }
+            else
+            {
+                m_jumpCount = value;
+            }
+        }
+    }
     private bool isJump = false;
 
     [Header("-Move")]
@@ -69,6 +112,19 @@ public class PlayerController : MonoBehaviour
     public float chopDriverCoolTime;
     public float chopDriverForce;
 
+    private PlayerParticleManager m_playerParticleManager;
+    private PlayerParticleManager playerParticleManager
+    {
+        get
+        {
+            if (m_playerParticleManager == null)
+            {
+                m_playerParticleManager = GetComponent<PlayerParticleManager>();
+            }
+            return m_playerParticleManager;
+        }
+    }
+
     public enum State
     {
         Normal,
@@ -80,8 +136,6 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        cameraFov = Camera.main.GetComponent<CameraFov>();
-        characterController = GetComponent<CharacterController>();
         hookshotTransform.gameObject.SetActive(false);
     }
 
@@ -153,15 +207,20 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            if (jumpCount == 0) jumpCount = 1;
+            if (jumpCount == 0)
+            {
+                jumpCount = 1;
+            }
             isJump = true;
         }
 
         if (Input.GetKeyDown(KeyCode.Space) && (!isJump || jumpCount <= extraJumpCount))
         {
+            //playerParticleManager.InjectAir(Quaternion.LookRotation(Vector3.down));
             characterVelocityY = jumpForce;
             jumpCount++;
         }
+
         ExtraJump();
     }
 
@@ -174,19 +233,19 @@ public class PlayerController : MonoBehaviour
         }
         if (!isAddExtraJumpCoolTime)
         {
-            if (jumpCount == (extraJumpCount + 1))
+            if (jumpCount > 0)
             {
                 StartCoroutine("AddExtraJump", addExtraJumpCoolTime);
             }
         }
     }
 
-    private IEnumerator AddExtraJump(float _coolTime)
+    private IEnumerator AddExtraJump(float coolTime)
     {
         isAddExtraJumpCoolTime = true;
-        while (_coolTime > 0)
+        while (coolTime > 0)
         {
-            _coolTime -= Time.deltaTime;
+            coolTime -= Time.deltaTime;
             yield return new WaitForFixedUpdate();
         }
         Debug.Log("Charged ExtraJump");
@@ -197,7 +256,7 @@ public class PlayerController : MonoBehaviour
 
     private void HookShot()
     {
-        if (Input.GetMouseButtonDown(1) && isHookShotReload)
+        if (Input.GetMouseButtonDown(1) && isHookShotReload && isUseHookShoot)
         {
             mouseRay = playerCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(mouseRay, out hitCollider, hookShotLimitMaxDistance, LayerMask.GetMask("Floor")))
@@ -244,9 +303,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private IEnumerator HookReload(float _coolTime)
+    private IEnumerator HookReload(float coolTime)
     {
-        yield return new WaitForSeconds(_coolTime);
+        yield return new WaitForSeconds(coolTime);
         isHookShotReload = true;
         Debug.Log("Hook Reloaded");
     }
@@ -270,8 +329,8 @@ public class PlayerController : MonoBehaviour
         float moveX = Input.GetAxisRaw("Horizontal");
         float moveZ = Input.GetAxisRaw("Vertical");
 
-        Vector3 _dashCharacterVelocity = (transform.right * moveX + transform.forward * moveZ) * dashSpeed;
-        if (_dashCharacterVelocity == Vector3.zero)
+        Vector3 dashCharacterVelocity = (transform.right * moveX + transform.forward * moveZ) * dashSpeed;
+        if (dashCharacterVelocity == Vector3.zero)
         {
             Debug.Log("Did not dash");
             state = dashBeforeState;
@@ -280,22 +339,23 @@ public class PlayerController : MonoBehaviour
         {
             if (canDash)
             {
+                //playerParticleManager.InjectAir(Quaternion.LookRotation(-dashCharacterVelocity));
                 cameraFov.SetCameraFov(dashFov);
-                StartCoroutine(DashMovement(dashDurationTime, _dashCharacterVelocity));
+                StartCoroutine(DashMovement(dashDurationTime, dashCharacterVelocity));
                 StartCoroutine(DashReload(dashCoolTime));
             }
         }
     }
 
-    private IEnumerator DashMovement(float _durationTime, Vector3 _dashCharacterVelocity)
+    private IEnumerator DashMovement(float durationTime, Vector3 dashCharacterVelocity)
     {
         canDash = false;
-        _dashCharacterVelocity.y = 0;
-        while (_durationTime > 0)
+        dashCharacterVelocity.y = 0;
+        while (durationTime > 0)
         {
-            _durationTime -= Time.deltaTime;
+            durationTime -= Time.deltaTime;
             hookshotTransform.LookAt(hitCollider.point);
-            characterController.Move(_dashCharacterVelocity * Time.deltaTime);
+            characterController.Move(dashCharacterVelocity * Time.deltaTime);
             yield return new WaitForFixedUpdate();
         }
         characterVelocityMomentum = Vector3.zero;
@@ -304,11 +364,11 @@ public class PlayerController : MonoBehaviour
         state = dashBeforeState;
     }
 
-    private IEnumerator DashReload(float _coolTime)
+    private IEnumerator DashReload(float coolTime)
     {
-        while (_coolTime > 0)
+        while (coolTime > 0)
         {
-            _coolTime -= Time.deltaTime;
+            coolTime -= Time.deltaTime;
             yield return new WaitForFixedUpdate();
         }
         canDash = true;
@@ -354,12 +414,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private IEnumerator ReloadChopDriver(float _coolTime)
+    private IEnumerator ReloadChopDriver(float coolTime)
     {
         isChopDrive = true;
-        while (_coolTime > 0)
+        while (coolTime > 0)
         {
-            _coolTime -= Time.deltaTime;
+            coolTime -= Time.deltaTime;
             yield return new WaitForFixedUpdate();
         }
         isChopDrive = false;

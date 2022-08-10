@@ -31,13 +31,13 @@ namespace Weapon
         protected bool startFire;
         protected bool stopFire;
 
-        protected void WeaponAction(Gun _gun)
+        protected void WeaponAction(Gun gun)
         {
             if (!isReload)
             {
                 if (startFire)
                 {
-                    StartCoroutine("GunAction", _gun);
+                    StartCoroutine("GunAction", gun);
                 }
                 else if (stopFire)
                 {
@@ -45,12 +45,12 @@ namespace Weapon
                 }
                 if (inputReload)
                 {
-                    StartCoroutine("OnReload", _gun);
+                    StartCoroutine("OnReload", gun);
                 }
             }
         }
 
-        protected void WeaponAction(Knife _knife)
+        protected void WeaponAction(Knife knife)
         {
             if (startFire)
             {
@@ -58,106 +58,105 @@ namespace Weapon
             }
             else if (stopFire)
             {
-
                 StopCoroutine("KnifeAction");
             }
         }
 
-        private IEnumerator GunAction(Gun _gun)
+        private IEnumerator GunAction(Gun gun)
         {
-            if (_gun.currentAmmo > 0)
+            if (gun.currentAmmo > 0)
             {
-                switch (_gun.currentShotMode)
+                switch (gun.currentShotMode)
                 {
                     case Gun.ShotMode.Auto:
-                        while (_gun.currentAmmo > 0 && !isReload)
+                        while (gun.currentAmmo > 0 && !isReload)
                         {
-                            Shot(_gun);
+                            Shot(gun);
                             yield return null;
                         }
                         break;
                     case Gun.ShotMode.Burst:
                         int theNumberOfFire = 0;
-                        while (_gun.currentAmmo > 0 && !isReload && theNumberOfFire < 3)
+                        while (gun.currentAmmo > 0 && !isReload && theNumberOfFire < 3)
                         {
-                            Shot(_gun);
+                            Shot(gun);
                             theNumberOfFire++;
                             yield return null;
                         }
                         break;
                     case Gun.ShotMode.Semiauto:
-                        Shot(_gun);
+                        Shot(gun);
                         yield return null;
                         break;
                 }
             }
-            if (_gun.autoReload && _gun.currentAmmo <= 0)
+            if (gun.autoReload && gun.currentAmmo <= 0 && !isReload)
             {
-                StartCoroutine("OnReload", _gun);
+                StartCoroutine("OnReload", gun);
             }
         }
 
-        private IEnumerator KnifeAction(Knife _knife)
+        private IEnumerator KnifeAction(Knife knife)
         {
             while (true)
             {
-                Stab(_knife);
+                Stab(knife);
                 yield return null;
             }
         }
 
-        private void Shot(Gun _gun)
+        private void Shot(Gun gun)
         {
-            if (Time.time - lastFireTime > 1 / _gun.fireRate)
+            if (Time.time - lastFireTime > 1 / gun.fireRate)
             {
                 Debug.Log("Fire");
-                _gun.currentAmmo--;
-                Hit(_gun.damage, _gun.range);
+                gun.currentAmmo--;
+                Hit(gun.damage, gun.range);
                 lastFireTime = Time.time;
-                //PlaySound(_gun.audioClipFire);
+                //PlaySound(gun.audioClipFire);
             }
         }
 
-        private void Stab(Knife _knife)
+        private void Stab(Knife knife)
         {
-            if (Time.time - lastFireTime > _knife.attackRate)
+            if (Time.time - lastFireTime > knife.attackRate)
             {
                 Debug.Log("Stab");
-                Hit(_knife.damage, _knife.range);
+                Hit(knife.damage, knife.range);
                 lastFireTime = Time.time;
             }
         }
 
-        private void Hit(float _damage, float _range)
+        private void Hit(float damage, float range)
         {
-            if (Physics.Raycast(standardObjectOfShot.position, standardObjectOfShot.forward, out m_collidertHit, _range, targetLayerMask))
+            if (Physics.Raycast(standardObjectOfShot.position, standardObjectOfShot.forward, out m_collidertHit, range, targetLayerMask))
             {
                 Debug.Log("Take Damage");
-                if (m_collidertHit.transform.TryGetComponent(out EntityInfo _entityInfo))
+                if (m_collidertHit.transform.TryGetComponent(out EntityInfo entityInfo))
                 {
-                    _entityInfo.takenDamage += _damage;
+                    entityInfo.takenDamage += damage;
                 }
             }
         }
 
-        protected IEnumerator OnReload(Gun _gun)
+        protected IEnumerator OnReload(Gun gun)
         {
             isReload = true;
-            float _reloadTime = _gun.reloadTime;
-            while (_reloadTime > 0)
+            float reloadTime = gun.reloadTime;
+            while (reloadTime > 0)
             {
-                _reloadTime -= Time.deltaTime;
+                reloadTime -= Time.deltaTime;
                 yield return new WaitForFixedUpdate();
             }
             Debug.Log("Reload Complete");
-            _gun.currentAmmo = _gun.maxAmmo;
+            gun.currentAmmo = gun.maxAmmo;
             isReload = false;
         }
 
-        private void PlaySound(AudioClip _clip)
+        private void PlaySound(AudioClip clip)
         {
             audioSource.Stop();
-            audioSource.clip = _clip;
+            audioSource.clip = clip;
             audioSource.Play();
         }
     }

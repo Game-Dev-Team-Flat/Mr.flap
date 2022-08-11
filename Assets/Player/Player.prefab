@@ -269,7 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bda7cb1a13552e845bb38305c9f20efb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravityScale: 4
+  gravityScale: 1
   playerCamera: {fileID: 3300005493506347176}
   normalFov: 60
   hookshotFov: 80
@@ -280,7 +280,7 @@ MonoBehaviour:
   hookShotMoveSpeedMax: 50
   hookShotLimitMaxDistance: 200
   hookShotCoolTime: 1
-  hookShotLimitDistance: 0
+  hookShotLimitDistance: 1
   state: 0
   hookshotTransform: {fileID: 3300005493685542734}
   hookshotThrowSpeed: 100

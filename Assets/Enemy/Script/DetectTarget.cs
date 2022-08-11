@@ -5,6 +5,8 @@ public class DetectTarget : MonoBehaviour
 {
     [Header("-Detecting Area Setting")]
     [SerializeField]
+    private Vector3 offset;
+    [SerializeField]
     private float m_detectionAngle;
     [SerializeField]
     private float m_detectionDistance;
@@ -14,9 +16,9 @@ public class DetectTarget : MonoBehaviour
     private string targetTag;
     [SerializeField]
     private LayerMask m_ignoreLayerMask;
-    public bool useDetectingArea;
-    [HideInInspector]
-    public GameObject detectingArea;
+    //public bool useDetectingArea;
+    //[HideInInspector]
+    //public GameObject detectingArea;
 
     private GameObject[] m_targetObjects;
     private GameObject m_detectedObject = null;
@@ -61,15 +63,15 @@ public class DetectTarget : MonoBehaviour
         TargetInDetectingArea,
         DetectingTarget
     }
-    
+
 
     private void OnDrawGizmos()
     {
-        if (!useDetectingArea)
-        {
-            Gizmos.DrawRay(transform.position, EulerToVector(detectionAngle / 2) * detectionDistance);
-            Gizmos.DrawRay(transform.position, EulerToVector(-detectionAngle / 2) * detectionDistance);
-        }
+        //if (!useDetectingArea)
+        //{
+        Gizmos.DrawRay(transform.position + offset, EulerToVector(detectionAngle / 2) * detectionDistance);
+        Gizmos.DrawRay(transform.position + offset, EulerToVector(-detectionAngle / 2) * detectionDistance);
+        //}
     }
 
     public DetectingState SearchTarget()
@@ -78,7 +80,7 @@ public class DetectTarget : MonoBehaviour
 
         foreach (GameObject v in targetObjects)
         {
-            float targetRadian = Vector3.Dot(transform.forward, (v.transform.position - transform.position).normalized);
+            float targetRadian = Vector3.Dot(transform.forward, (v.transform.position - transform.position - offset).normalized);
 
             if (targetRadian < radianRange)
             {
@@ -86,15 +88,15 @@ public class DetectTarget : MonoBehaviour
                 return DetectingState.DetectingNothing;
             }
 
-            Debug.DrawRay(transform.position, (v.transform.position - transform.position).normalized * detectionDistance);
+            Debug.DrawRay(transform.position + offset, (v.transform.position - transform.position - offset).normalized * detectionDistance);
 
-            if (Vector3.Distance(transform.position, v.transform.position) > detectionDistance)
+            if (Vector3.Distance(transform.position + offset, v.transform.position) > detectionDistance)
             {
                 detectedObject = null;
                 return DetectingState.TargetInDetectingArea;
             }
 
-            if (Physics.Raycast(transform.position, (v.transform.position - transform.position).normalized, out RaycastHit raycastHitCollider, detectionDistance, ~(ignoreLayerMask | Physics.IgnoreRaycastLayer)) &&
+            if (Physics.Raycast(transform.position, (v.transform.position - transform.position - offset).normalized, out RaycastHit raycastHitCollider, detectionDistance, ~(ignoreLayerMask | Physics.IgnoreRaycastLayer)) &&
                 ((int)Mathf.Pow(2, raycastHitCollider.transform.gameObject.layer) & targetLayerMask) == 0)
             {
                 detectedObject = null;
@@ -109,28 +111,28 @@ public class DetectTarget : MonoBehaviour
         return DetectingState.DetectingNothing;
     }
 
-    private GameObject[] FindGameObjectsWithLayer(LayerMask target)
-    {
-        GameObject[] goArray = FindObjectsOfType(typeof(GameObject)) as GameObject[];
-        List<GameObject> goList = new();
-        for (var i = 0; i < goArray.Length; i++)
-        {
-            if ((int)Mathf.Pow(2, goArray[i].layer) == target)
-            {
-                goList.Add(goArray[i]);
-            }
-        }
-        if (goList.Count == 0)
-        {
-            return null;
-        }
-        return goList.ToArray();
-    }
+    //private GameObject[] FindGameObjectsWithLayer(LayerMask target)
+    //{
+    //    GameObject[] goArray = FindObjectsOfType(typeof(GameObject)) as GameObject[];
+    //    List<GameObject> goList = new();
+    //    for (var i = 0; i < goArray.Length; i++)
+    //    {
+    //        if ((int)Mathf.Pow(2, goArray[i].layer) == target)
+    //        {
+    //            goList.Add(goArray[i]);
+    //        }
+    //    }
+    //    if (goList.Count == 0)
+    //    {
+    //        return null;
+    //    }
+    //    return goList.ToArray();
+    //}
 
-    private Vector3 EulerToVector(float _degree)
+    public Vector3 EulerToVector(float degree)
     {
-        _degree += transform.eulerAngles.y;
-        _degree *= Mathf.Deg2Rad;
-        return new Vector3(Mathf.Sin(_degree), 0, Mathf.Cos(_degree));
+        degree += transform.eulerAngles.y;
+        degree *= Mathf.Deg2Rad;
+        return new Vector3(Mathf.Sin(degree), 0, Mathf.Cos(degree));
     }
 }

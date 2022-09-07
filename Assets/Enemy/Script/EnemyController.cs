@@ -23,7 +23,6 @@ namespace Enemy
         protected DetectTarget detectTarget;
         [SerializeField]
         protected float identifyingTime;
-        private bool isArrived = false;
         protected NavMeshAgent navMeshAgent
         {
             get
@@ -55,7 +54,6 @@ namespace Enemy
             get => m_currentNode;
             set
             {
-
                 if (value < 0)
                 {
                     m_currentNode = path.childCount - 1;
@@ -97,7 +95,7 @@ namespace Enemy
         public enum EnemyState
         {
             DetectingNothing,
-            DetectingSomthing,
+            DetectingSomething,
             DetectingTarget,
             MissingTargetSideways,
             TargetOverDetectingDistance,
@@ -115,7 +113,7 @@ namespace Enemy
         }
 
         DetectTarget.DetectingState detectingState;
-        private EnemyState DetermineState()
+        protected EnemyState DetermineState()
         {
             detectingState = detectTarget.SearchTarget();
 
@@ -124,21 +122,21 @@ namespace Enemy
                 if (m_enemyState != EnemyState.DetectingTarget && detectedTime < identifyingTime)
                 {
                     detectedTime += detectTarget.detectionDistance * Time.deltaTime;// / Vector3.Distance(transform.position, detectTarget.detectedObject.transform.position) * Time.deltaTime;
-                    return EnemyState.DetectingSomthing;
+                    return EnemyState.DetectingSomething;
                 }
 
                 return EnemyState.DetectingTarget;
             }
             else // 발견이 안되면
             {
-                if (m_enemyState == EnemyState.DetectingSomthing && detectedTime > 0f)
+                if (m_enemyState == EnemyState.DetectingSomething && detectedTime > 0f)
                 {
                     ReduceDetectedTime(0.5f);
-                    return EnemyState.DetectingSomthing;
+                    return EnemyState.DetectingSomething;
                 }
-                else if (m_enemyState == EnemyState.DetectingTarget) // 머리 아파 니가 잘 해봐
+                else if (m_enemyState == EnemyState.DetectingTarget)
                 {
-                    if (Vector3.Distance(transform.position, targetObject.transform.position) < detectTarget.detectionDistance) // 잘 좀 해봐
+                    if (Vector3.Distance(transform.position, targetObject.transform.position) < detectTarget.detectionDistance)
                     {
                         if (detectingState == DetectTarget.DetectingState.TargetInDetectingArea)
                         {
@@ -154,13 +152,21 @@ namespace Enemy
                         return EnemyState.TargetOverDetectingDistance;
                     }
                 }
-                else if ((m_enemyState == EnemyState.TargetHindInObject || m_enemyState == EnemyState.MissingTargetSideways || m_enemyState == EnemyState.TargetOverDetectingDistance) && detectedTime > 0f)
+                else if (m_enemyState == EnemyState.MissingTargetSideways)
+                {
+                    if (Vector3.Distance(transform.position, targetObject.transform.position) > detectTarget.detectionDistance) // 멀어지면 따라 갈 수 있게
+                    {
+                        return EnemyState.TargetOverDetectingDistance;
+                    }
+
+                    return m_enemyState;
+                }
+                else if ((m_enemyState == EnemyState.TargetHindInObject || m_enemyState == EnemyState.TargetOverDetectingDistance) && detectedTime > 0f)
                 {
                     return m_enemyState;
                 }
                 else
                 {
-                    ReduceDetectedTime(1f);
                     return EnemyState.DetectingNothing;
                 }
             }
@@ -174,7 +180,7 @@ namespace Enemy
                 case EnemyState.DetectingNothing:
                     HandleDetectingNothing();
                     break;
-                case EnemyState.DetectingSomthing:
+                case EnemyState.DetectingSomething:
                     HandleDetectingSomething();
                     break;
                 case EnemyState.DetectingTarget:
@@ -207,7 +213,7 @@ namespace Enemy
         }
 
         protected abstract void HandleDetectingTarget();
-
+        
         protected virtual void HandleMissingTargetSideways()
         {
             StopNavMeshAgentMovement();
@@ -216,19 +222,12 @@ namespace Enemy
 
         protected virtual void HandleTargetOverDetectingDistance()
         {
-            if (isArrived)
-            {
-                ChaseTarget(LastDetectedPosition, 1f);
-            }
-            else
-            {
-                StopNavMeshAgentMovement();
-            }
+            ChaseTarget(targetObject.transform.position, 1f);
         }
 
         protected virtual void HandleTargetHindInObject()
         {
-            ChaseTarget(LastDetectedPosition, 1f);
+            ChaseTarget(targetObject.transform.position, 1f);
         }
 
         /// <summary>
@@ -237,6 +236,12 @@ namespace Enemy
         protected void Patrol()
         {
             navMeshAgent.speed = normalSpeed;
+
+            if (path == null)
+            {
+                return;
+            }
+
             if (Vector3.Distance(transform.position, path.GetChild(currentNode).position) > 0.3f)
             {
                 navMeshAgent.destination = path.GetChild(currentNode).position;
@@ -256,15 +261,10 @@ namespace Enemy
             if (Vector3.Distance(transform.position - Vector3.up * transform.position.y, targetPosition - Vector3.up * targetPosition.y) > stoppingDistance)
             {
                 navMeshAgent.destination = targetPosition;
-                isArrived = false;
             }
             else
             {
                 navMeshAgent.destination = transform.position;
-                if (detectingState != DetectTarget.DetectingState.DetectingTarget)
-                {
-                    isArrived = true;
-                }
             }
         }
 

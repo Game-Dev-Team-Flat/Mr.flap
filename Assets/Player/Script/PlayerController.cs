@@ -108,6 +108,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 characterVelocity;
     private float characterVelocityY;
     public Vector3 extraCharacterVelocity;
+    public float extraCharacterVelocityY = 0;
     private Vector3 characterVelocityMomentum;
     [SerializeField]
     private float momentumDrag;
@@ -190,9 +191,9 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            
-            extraCharacterVelocity.y += Physics.gravity.y * gravityScale * Time.deltaTime;
+            extraCharacterVelocityY += Physics.gravity.y * gravityScale * Time.deltaTime;
             extraCharacterVelocity -= extraCharacterVelocity * Time.deltaTime * 4f;
+            extraCharacterVelocity.y = extraCharacterVelocityY;
             characterController.Move(extraCharacterVelocity * Time.deltaTime);
         }
     }

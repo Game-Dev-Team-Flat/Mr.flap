@@ -52,7 +52,7 @@ namespace Item.Weapon
 
         protected void Hit(float damage, float range)
         {
-            if (Physics.Raycast(standardObjectOfShot.position, standardObjectOfShot.forward, out m_collidertHit, range, targetLayerMask))
+            if (Physics.Raycast(standardObjectOfShot.position, standardObjectOfShot.forward, out m_collidertHit, range, (targetLayerMask | LayerMask.GetMask("Floor")) & ~(int)Mathf.Pow(2, transform.root.gameObject.layer)))
             {
                 Debug.Log("Take Damage");
                 if (m_collidertHit.collider.TryGetComponent(out EntityInfo entityInfo))

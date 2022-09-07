@@ -10,12 +10,13 @@ namespace Item.Weapon
         [SerializeField]
         protected LayerMask targetLayerMask;
         [SerializeField]
-        protected bool useGravity;
+        protected bool isUseGravity;
         [SerializeField]
         private float gravityDownForce;
         public float moveSpeed;
         protected Vector3 velocity;
         protected float velocityY;
+        [Tooltip("폭탄 유지 시간")]
         [SerializeField]
         protected float holdingTime;
         protected float shotTime;
@@ -32,15 +33,17 @@ namespace Item.Weapon
         protected void Explosion()
         {
             Debug.Log("Boom");
-            RaycastHit[] objectsHit = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, ~LayerMask.GetMask("Floor"));
+            RaycastHit[] objectsHit = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, (~LayerMask.GetMask("Floor") | ~Physics.IgnoreRaycastLayer) & targetLayerMask);
             foreach (RaycastHit objectHit in objectsHit)
             {
-                if (Physics.Raycast(transform.position, (objectHit.transform.position - transform.position).normalized, out _, float.MaxValue, ~LayerMask.GetMask("Floor")))
+                if (Physics.Raycast(transform.position, (objectHit.transform.position - transform.position).normalized, float.MaxValue, LayerMask.GetMask("Floor")))
                 {
-                    if (objectHit.transform.TryGetComponent(out EntityInfo entityInfo))
-                    {
-                        entityInfo.takenDamage += (entityInfo.transform.gameObject.layer == LayerMask.GetMask("Player")) ? (explosionDamage / 10f) : explosionDamage;
-                    }
+                    return;
+                }
+
+                if (((int)Mathf.Pow(2, objectHit.transform.gameObject.layer) & targetLayerMask) != 0)
+                {
+                    objectHit.transform.GetComponent<EntityInfo>().takenDamage += explosionDamage;
                 }
             }
             // 이펙트 발사
@@ -49,7 +52,7 @@ namespace Item.Weapon
 
         protected void Movement()
         {
-            if (useGravity)
+            if (isUseGravity)
             {
                 velocityY -= gravityDownForce * Time.deltaTime;
                 velocity.y = velocityY;

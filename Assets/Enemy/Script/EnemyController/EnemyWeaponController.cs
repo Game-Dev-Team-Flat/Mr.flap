@@ -54,22 +54,29 @@ namespace Enemy
         protected float shotAngle;
         [SerializeField]
         protected float shotDistance;
+        protected bool isShooting = false;
+        private int defaultInventorySlotNumber;
+
         protected UseWeapon enemyWeapon
         {
             get
             {
-                if (m_enemyWeapon == null)
+                if (m_enemyWeapon == null || enemyInfo.inventorySlotNumber != defaultInventorySlotNumber)
                 {
-                    m_enemyWeapon = enemyInfo.inventory[0].item.GetComponent<UseWeapon>();
+                    m_enemyWeapon = enemyInfo.inventory[enemyInfo.inventorySlotNumber].item.GetComponent<UseWeapon>();
+                    defaultInventorySlotNumber = enemyInfo.inventorySlotNumber;
                 }
                 return m_enemyWeapon;
             }
+            set => m_enemyWeapon = value;
         }
 
         private void OnDrawGizmos()
         {
-            Gizmos.DrawRay(enemyWeapon.standardObjectOfShot.transform.position, EulerToVector( shotAngle / 2) * shotDistance);
-            Gizmos.DrawRay(enemyWeapon.standardObjectOfShot.transform.position, EulerToVector(-shotAngle / 2) * shotDistance);
+            Gizmos.DrawRay(enemyWeapon.standardObjectOfShot.transform.position,
+                EulerToVector(enemyWeapon.standardObjectOfShot.transform, shotAngle / 2) * shotDistance);
+            Gizmos.DrawRay(enemyWeapon.standardObjectOfShot.transform.position,
+                EulerToVector(enemyWeapon.standardObjectOfShot.transform, -shotAngle / 2) * shotDistance);
         }
 
         protected virtual void Update()
@@ -79,8 +86,28 @@ namespace Enemy
                 Targeting();
             }
 
-            enemyWeapon.startFire = IsInFireArea();
-            enemyWeapon.stopFire = !IsInFireArea();
+            if (IsInFireArea())
+            {
+                if (!isShooting)
+                {
+                    Debug.Log("Find");
+                    enemyWeapon.stopFire = false;
+                    enemyWeapon.startFire = true;
+                    isShooting = true;
+                }
+                else
+                {
+                    Debug.Log("Found");
+                    enemyWeapon.startFire = false;
+                }
+            }
+            else // 적이 못 봤을 때
+            {
+                Debug.Log("Not Found");
+                enemyWeapon.startFire = false;
+                enemyWeapon.stopFire = true;
+                isShooting = false;
+            }
 
             enemyWeapon.WeaponAction();
         }
@@ -91,7 +118,7 @@ namespace Enemy
             {
                 float radianRange = Mathf.Cos(shotAngle / 2 * Mathf.Deg2Rad);
 
-                float targetRadian = Vector3.Dot(enemyWeapon.standardObjectOfShot.forward, (enemyController.targetObject.transform.position - transform.position).normalized);
+                float targetRadian = Vector3.Dot(enemyWeapon.standardObjectOfShot.forward, (enemyController.targetObject.transform.position - enemyWeapon.standardObjectOfShot.transform.position).normalized);
 
                 if (radianRange < targetRadian && Vector3.Distance(enemyController.targetObject.transform.position, transform.position) < shotDistance)
                 {
@@ -110,23 +137,18 @@ namespace Enemy
 
         protected void Targeting()
         {
-            if (detectTarget.detectedObject != null)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(enemyController.targetObject.transform.position - enemyInfo.inventory[0].item.transform.position);
+            Quaternion targetRotation;
+            float rotateSpeed = 5f;
 
-                float rotateSpeed = 5f;
-                targetRotation = Quaternion.Euler(new Vector3(targetRotation.eulerAngles.x, enemyInfo.inventory[0].item.transform.eulerAngles.y, enemyInfo.inventory[0].item.transform.eulerAngles.z));
-                enemyInfo.inventory[0].item.transform.rotation = Quaternion.Slerp(enemyInfo.inventory[0].item.transform.rotation, targetRotation, Time.deltaTime * rotateSpeed);
-            }
-            else
+            if (enemyController.enemyState != EnemyController.EnemyState.DetectingNothing)
             {
-                float rotateSpeed = 5f;
-                Quaternion targetRotation = Quaternion.Euler(new Vector3(0, enemyInfo.inventory[0].item.transform.eulerAngles.y, enemyInfo.inventory[0].item.transform.eulerAngles.z));
-                enemyInfo.inventory[0].item.transform.rotation = Quaternion.Slerp(enemyInfo.inventory[0].item.transform.rotation, targetRotation, Time.deltaTime * rotateSpeed);
+                targetRotation = Quaternion.LookRotation(enemyController.targetObject.transform.position - enemyInfo.inventory[enemyInfo.inventorySlotNumber].item.transform.position);
+
+                enemyInfo.inventory[enemyInfo.inventorySlotNumber].item.transform.rotation = Quaternion.Slerp(enemyInfo.inventory[enemyInfo.inventorySlotNumber].item.transform.rotation, targetRotation, Time.deltaTime * rotateSpeed);
             }
         }
 
-        private Vector3 EulerToVector(float degree)
+        private Vector3 EulerToVector(Transform transform, float degree)
         {
             degree += transform.eulerAngles.y;
             degree *= Mathf.Deg2Rad;

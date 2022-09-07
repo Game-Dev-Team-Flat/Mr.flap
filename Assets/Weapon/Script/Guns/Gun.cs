@@ -11,6 +11,7 @@ namespace Item.Weapon
         [Header("-Public Gun setting")]
         public int maxAmmo;
         public int currentAmmo;
+        [Tooltip("Shot Per Second")]
         public float fireRate;
         public float reloadTime;
         public bool autoReload = false;
@@ -74,7 +75,7 @@ namespace Item.Weapon
                         break;
                     case ShotMode.Burst:
                         int theNumberOfFire = 0;
-                        while (currentAmmo > 0 && !isReload && theNumberOfFire < 3)
+                        while (currentAmmo > 0 && !isReload && theNumberOfFire < 4)
                         {
                             Fire();
                             theNumberOfFire++;
@@ -107,7 +108,10 @@ namespace Item.Weapon
 
         public virtual void PlayBulletParticle()
         {
-            bulletParticle.Play();
+            if (bulletParticle != null)
+            {
+                bulletParticle.Play();
+            }
         }
     }
 }

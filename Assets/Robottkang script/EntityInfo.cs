@@ -6,9 +6,9 @@ public class EntityInfo : MonoBehaviour
 {
     [SerializeField]
     private Inventory[] m_inventory;
-    private int m_inventorySlotNumber;
+    private int m_inventorySlotNumber = 0;
     [SerializeField]
-    private float maxHp;
+    protected float maxHp;
     [SerializeField]
     private float m_currentHp;
     public float hpReduceRate;
@@ -42,7 +42,7 @@ public class EntityInfo : MonoBehaviour
         public float stun;
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         CalculateDamage();
     }

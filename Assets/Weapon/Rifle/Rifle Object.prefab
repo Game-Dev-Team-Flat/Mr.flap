@@ -49,7 +49,7 @@ MonoBehaviour:
   m_standardObjectOfShot: {fileID: 1030109890980386728}
   m_targetLayerMask:
     serializedVersion: 2
-    m_Bits: 320
+    m_Bits: 384
   inputReload: 0
   startFire: 0
   stopFire: 0
@@ -57,11 +57,11 @@ MonoBehaviour:
   currentAmmo: 24
   fireRate: 10
   reloadTime: 3
-  autoReload: 0
+  autoReload: 1
   range: 1000
   damage: 10
   shotMode: 3
-  currentShotMode: 1
+  currentShotMode: 2
   m_bulletParticle: {fileID: 440298666955291926}
 --- !u!1 &2800220091953683114
 GameObject:

@@ -4972,7 +4972,7 @@ MonoBehaviour:
   m_standardObjectOfShot: {fileID: 2258003148567037996}
   m_targetLayerMask:
     serializedVersion: 2
-    m_Bits: 192
+    m_Bits: 320
   inputReload: 0
   startFire: 0
   stopFire: 0

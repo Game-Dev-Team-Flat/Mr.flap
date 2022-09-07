@@ -10,13 +10,16 @@ namespace Item.Weapon
         public override void WeaponAction()
         {
             ExtraAction();
+            base.WeaponAction();
         }
 
         private void ExtraAction()
         {
-            if (currentAmmo > 0 && startFire)
+            if (currentAmmo > 0 && startFire && Time.time - lastFireTime > 1 / fireRate)
             {
-                //Instantiate(rocket, playerInfo.eyesOfObject.position + playerInfo.eyesOfObject.forward * 1f + playerInfo.eyesOfObject.up * -0.3f + playerInfo.eyesOfObject.right * 0.3f, playerInfo.eyesOfObject.rotation);
+                Debug.Log("Fire");
+                Instantiate(rocket, standardObjectOfShot.position, Quaternion.LookRotation(transform.forward, Vector3.up));
+                lastFireTime = Time.time;
             }
         }
     }

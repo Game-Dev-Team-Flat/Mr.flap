@@ -8,13 +8,15 @@ namespace Item.Weapon
     {
         public float pushPower;
         public float stunDuration;
+        [SerializeField]
+        private bool isUsePushAnimation; // 보스가 Push animation 꺼내 쓰니까 오류 생겨서 만든 변수
+        private float changedLastFireTime;
 
         public override void WeaponAction()
         {
-            float defaultLastFireTime = lastFireTime;
             base.WeaponAction();
 
-            if (lastFireTime != defaultLastFireTime)
+            if (changedLastFireTime != lastFireTime)
             {
                 RaycastHit[] colliderHit = Physics.SphereCastAll(transform.position, range, Vector3.up, 0f, targetLayerMask);//~((int)Mathf.Pow(2, gameObject.layer) | Physics.IgnoreRaycastLayer));
 
@@ -26,16 +28,21 @@ namespace Item.Weapon
                         if (colliderHit[i].transform.gameObject.layer == LayerMask.NameToLayer("Player"))     // 목표가 Player일 때
                         {
                             PlayerController playerController = colliderHit[i].transform.GetComponent<PlayerController>();
+                            if (isUsePushAnimation)
+                            {
+                                GetComponent<Animator>().Play("Push");
+                            }
                             playerController.extraCharacterVelocity += Push(colliderHit[i].transform.position);
+                            playerController.extraCharacterVelocityY = 0f;
                         }
                         //else if (colliderHit[i].transform.gameObject.layer == LayerMask.NameToLayer("Enemy")) // 목표가 Enemy일 때
                         //{
                         //    NavMeshAgent enemyNavMeshAgent = colliderHit[i].transform.GetComponent<NavMeshAgent>();
                         //    enemyNavMeshAgent.enabled = false;
                         //}
-                        StartCoroutine(ShieldDash(transform.root.transform.forward, 2f, 5f)); // 오류 있음
                     }
                 }
+                changedLastFireTime = lastFireTime;
             }
         }
 
@@ -47,17 +54,6 @@ namespace Item.Weapon
         private Vector3 Push(Vector3 targetPosition)
         {
             return (targetPosition - standardObjectOfShot.transform.position).normalized * pushPower;
-        }
-
-        private IEnumerator ShieldDash(Vector3 direction, float distance, float speed)
-        {
-            Vector3 defaultRootPosition = transform.root.position;
-            CharacterController characterController = transform.root.GetComponent<CharacterController>();
-            while (Vector3.Distance(defaultRootPosition, transform.root.position) < distance)
-            {
-                characterController.Move(direction * Time.deltaTime * speed * 10f);
-                yield return new WaitForFixedUpdate();
-            }
         }
     }
 }

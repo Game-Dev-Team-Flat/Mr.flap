@@ -12,7 +12,7 @@ public class DetectingArea : MonoBehaviour
         {
             if (m_detectTarget == null)
             {
-                m_detectTarget = transform.root.GetComponent<DetectTarget>();
+                m_detectTarget = transform.root.GetComponentInChildren<DetectTarget>();
             }
             return m_detectTarget;
         }
@@ -30,20 +30,21 @@ public class DetectingArea : MonoBehaviour
 
     private float actualAngle;
 
+    private void Start()
+    {
+        buildMesh();
+    }
+
     void LateUpdate()
     {
-        myMesh = gameObject.GetComponent<MeshFilter>().mesh;
-
-        buildMesh();
+        UpdateMesh();
+        
     }
 
     void buildMesh()
     {
         // Grab the Mesh off the gameObject
-        //myMesh = gameObject.GetComponent<MeshFilter>().mesh;
-
-        //Clear the mesh
-        myMesh.Clear();
+        myMesh = gameObject.GetComponent<MeshFilter>().mesh;
 
         // Calculate actual pythagorean angle
         actualAngle = 90.0f - detectTarget.detectionAngle / 2;
@@ -89,6 +90,44 @@ public class DetectingArea : MonoBehaviour
         for (int i = 0; i < uvs.Length; i++)
         {
             uvs[i] = new Vector2(verts[i].x, verts[i].z);
+        }
+
+        // Put all these back on the mesh
+        myMesh.vertices = verts;
+        myMesh.normals = normals;
+        myMesh.triangles = triangles;
+        myMesh.uv = uvs;
+    }
+
+    private void UpdateMesh()
+    {
+        // Create a dummy angle
+        float a = actualAngle;
+
+        // Create the Vertices
+        for (int i = 1; i < verts.Length; i += 3)
+        {
+            Debug.DrawRay(transform.position, (new Vector3(Mathf.Cos(Mathf.Deg2Rad * a), 0, Mathf.Sin(Mathf.Deg2Rad * a)) + transform.root.forward) * detectTarget.detectionDistance);
+            if (Physics.Raycast(transform.position, new Vector3(Mathf.Cos(Mathf.Deg2Rad * a), 0, Mathf.Sin(Mathf.Deg2Rad * a)) + transform.root.forward, out RaycastHit hitInfo, detectTarget.detectionDistance, ~LayerMask.GetMask("Enemy")))
+            {
+                Debug.Log(hitInfo.collider);
+                verts[i] = hitInfo.point;
+            }
+            else
+            {
+                verts[i] = new Vector3(Mathf.Cos(Mathf.Deg2Rad * a) * detectTarget.detectionDistance, 0, Mathf.Sin(Mathf.Deg2Rad * a) * detectTarget.detectionDistance);
+            }
+
+            a += segmentAngle;
+
+            if (Physics.Raycast(transform.position, new Vector3(Mathf.Cos(Mathf.Deg2Rad * a), 0, Mathf.Sin(Mathf.Deg2Rad * a)) + transform.root.forward, out hitInfo, detectTarget.detectionDistance, ~LayerMask.GetMask("Enemy")))
+            {
+                verts[i + 1] = hitInfo.point;
+            }
+            else
+            {
+                verts[i + 1] = new Vector3(Mathf.Cos(Mathf.Deg2Rad * a) * detectTarget.detectionDistance, 0, Mathf.Sin(Mathf.Deg2Rad * a) * detectTarget.detectionDistance);
+            }
         }
 
         // Put all these back on the mesh

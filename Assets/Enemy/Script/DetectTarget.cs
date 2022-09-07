@@ -5,8 +5,6 @@ public class DetectTarget : MonoBehaviour
 {
     [Header("-Detecting Area Setting")]
     [SerializeField]
-    private Vector3 offset;
-    [SerializeField]
     private float m_detectionAngle;
     [SerializeField]
     private float m_detectionDistance;
@@ -69,8 +67,8 @@ public class DetectTarget : MonoBehaviour
     {
         //if (!useDetectingArea)
         //{
-        Gizmos.DrawRay(transform.position + offset, EulerToVector(detectionAngle / 2) * detectionDistance);
-        Gizmos.DrawRay(transform.position + offset, EulerToVector(-detectionAngle / 2) * detectionDistance);
+        Gizmos.DrawRay(transform.position, EulerToVector(detectionAngle / 2) * detectionDistance);
+        Gizmos.DrawRay(transform.position, EulerToVector(-detectionAngle / 2) * detectionDistance);
         //}
     }
 
@@ -80,7 +78,7 @@ public class DetectTarget : MonoBehaviour
 
         foreach (GameObject v in targetObjects)
         {
-            float targetRadian = Vector3.Dot(transform.forward, (v.transform.position - transform.position - offset).normalized);
+            float targetRadian = Vector3.Dot(transform.forward - Vector3.up * transform.forward.y, (v.transform.position - Vector3.up * v.transform.position.y - transform.position + Vector3.up * transform.position.y).normalized);
 
             if (targetRadian < radianRange)
             {
@@ -88,15 +86,15 @@ public class DetectTarget : MonoBehaviour
                 return DetectingState.DetectingNothing;
             }
 
-            Debug.DrawRay(transform.position + offset, (v.transform.position - transform.position - offset).normalized * detectionDistance);
+            Debug.DrawRay(transform.position, (v.transform.position - Vector3.up * v.transform.position.y - transform.position + Vector3.up * transform.position.y).normalized * detectionDistance);
 
-            if (Vector3.Distance(transform.position + offset, v.transform.position) > detectionDistance)
+            if (Vector3.Distance(transform.position, v.transform.position) > detectionDistance)
             {
                 detectedObject = null;
                 return DetectingState.TargetInDetectingArea;
             }
 
-            if (Physics.Raycast(transform.position, (v.transform.position - transform.position - offset).normalized, out RaycastHit raycastHitCollider, detectionDistance, ~(ignoreLayerMask | Physics.IgnoreRaycastLayer)) &&
+            if (Physics.Raycast(transform.position, (v.transform.position - transform.position).normalized, out RaycastHit raycastHitCollider, detectionDistance, ~(ignoreLayerMask | Physics.IgnoreRaycastLayer)) &&
                 ((int)Mathf.Pow(2, raycastHitCollider.transform.gameObject.layer) & targetLayerMask) == 0)
             {
                 detectedObject = null;

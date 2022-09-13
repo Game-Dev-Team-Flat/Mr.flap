@@ -5638,7 +5638,7 @@ MonoBehaviour:
   inputReload: 0
   startFire: 0
   stopFire: 0
-  attackRate: 0.5
+  attackRate: 1
   range: 30
   damage: 10
   pushPower: 30

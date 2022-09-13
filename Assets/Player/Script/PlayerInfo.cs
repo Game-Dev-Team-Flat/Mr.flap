@@ -14,9 +14,4 @@ public class PlayerInfo : EntityInfo
     public KeyCode reloadKey => m_reloadKey;
     public KeyCode changeShotModeKey => m_changeShotModeKey;
     public Transform eyesOfObject => m_eyesOfObject;
-
-    private void Update()
-    {
-        CalculateDamage();
-    }
 }

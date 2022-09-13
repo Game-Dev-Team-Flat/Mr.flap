@@ -18,7 +18,8 @@ namespace Item.Weapon
             if (currentAmmo > 0 && startFire && Time.time - lastFireTime > 1 / fireRate)
             {
                 Debug.Log("Fire");
-                Instantiate(rocket, standardObjectOfShot.position, Quaternion.LookRotation(transform.forward, Vector3.up));
+                GameObject launchedRocket = Instantiate(rocket, standardObjectOfShot.position, Quaternion.LookRotation(transform.forward, Vector3.up));
+                launchedRocket.GetComponent<Boom>().ignoreLayerMask = (int)Mathf.Pow(2, transform.root.gameObject.layer);
                 lastFireTime = Time.time;
             }
         }

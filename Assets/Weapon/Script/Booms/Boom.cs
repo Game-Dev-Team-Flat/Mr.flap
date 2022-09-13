@@ -9,6 +9,7 @@ namespace Item.Weapon
         [Header("-Boom Setting")]
         [SerializeField]
         protected LayerMask targetLayerMask;
+        public LayerMask ignoreLayerMask;
         [SerializeField]
         protected bool isUseGravity;
         [SerializeField]
@@ -41,7 +42,7 @@ namespace Item.Weapon
                     return;
                 }
 
-                if (((int)Mathf.Pow(2, objectHit.transform.gameObject.layer) & targetLayerMask) != 0)
+                if (((int)Mathf.Pow(2, objectHit.transform.gameObject.layer) & targetLayerMask & ~ignoreLayerMask) != 0)
                 {
                     objectHit.transform.GetComponent<EntityInfo>().takenDamage += explosionDamage;
                 }

@@ -42,16 +42,20 @@ namespace Enemy.Boss
 
         protected override void Update()
         {
-            if (enemyController.enemyState == EnemyController.EnemyState.DetectingTarget && Time.time - lastSkillCastTime > skillCoolTime)
+            if (enemyController.targetObject != null && !isCastingSkill)
+            {
+                if (Vector3.Distance(enemyController.targetObject.transform.position, transform.position) < buttstockAttackRange)
+                {
+                    ButtstockAttack();
+                }
+            }
+
+            if (enemyController.enemyState == EnemyController.EnemyState.DetectingTarget && Time.time - lastSkillCastTime > skillCoolTime && !isCastingSkill)
             {
                 skillCoolTime = Random.Range(6f, 7f);
                 lastSkillCastTime = Time.time;
 
-                if (Vector3.Distance(enemyController.targetObject.transform.position, transform.position) < buttstockAttackRange)
-                {
-                    StartCoroutine(ButtstockAttack());
-                }
-                else if (bossInfo.currentBossPage == BossInfo.BossPage.Page1)
+                if (bossInfo.currentBossPage == BossInfo.BossPage.Page1)
                 {
                     StartCoroutine(GrenadeAttack());
                 }
@@ -59,7 +63,7 @@ namespace Enemy.Boss
                 {
                     if (Random.Range(0, 2) == 0)
                     {
-                        StartCoroutine(RocketLuncherAttack(1f));
+                        RocketLuncherAttack();
                     }
                     else
                     {
@@ -79,14 +83,14 @@ namespace Enemy.Boss
             }
         }
 
-        private IEnumerator ButtstockAttack()
+        private void ButtstockAttack()
         {
             enemyInfo.inventorySlotNumber = 2; // 개머리판 공격
             CastSkill();
-            animator.Play("ButtstockAttack");
-            enemyWeapon.WeaponAction();
-            yield return new WaitForSeconds(0.7f);
-            ResetSkill();
+            animator.SetInteger("Skill", 2);
+            //enemyWeapon.WeaponAction();
+            //yield return new WaitForSeconds(0.7f);
+            //ResetSkill();
         }
 
         private IEnumerator GrenadeAttack()
@@ -95,27 +99,47 @@ namespace Enemy.Boss
             CastSkill();
             //GameObject grenadeObject = enemyInfo.inventory[3].item.GetComponent<Item.Weapon.RocketLauncher>().rocket; // 디자인 생성 후 파괴
             //Destroy(Instantiate(grenadeObject, enemyInfo.inventory[3].item.transform), 2f);
+
             yield return new WaitForSeconds(1.5f);
             enemyWeapon.WeaponAction();
             yield return new WaitForSeconds(1f);
             ResetSkill();
         }
 
-        private IEnumerator RocketLuncherAttack(float targetingTime)
+        private void RocketLuncherAttack()
         {
             enemyInfo.inventorySlotNumber = 1; // 로켓런쳐
             animator.SetInteger("Skill", 1);
             CastSkill();
-            animator.Play("RocketLunchEquipe");
-            yield return new WaitForSeconds(1f);
-            animator.enabled = false;
+            animator.Play("RocketLuncherEquipe");
+            //yield return new WaitForSeconds(1f);
+            //animator.enabled = false;
+            //yield return new WaitForSeconds(targetingTime);
+            //enemyWeapon.WeaponAction();
+            //animator.enabled = true;
+            //yield return new WaitForSeconds(0.1f);
+            //animator.Play("RocketLunchDisarm");
+            
+            //yield return new WaitForSeconds(1f);
+            //ResetSkill();
+        }
+
+        private void AnimationEnable(int whetherActive)
+        {
+            animator.enabled = whetherActive > 0 ? true : false;
+        }
+
+        private IEnumerator StartWeaponAction(float targetingTime)
+        {
+            yield return new WaitForSeconds(targetingTime);
+            enemyWeapon.WeaponAction();
+        }
+        private IEnumerator StartRocketLuncherWeaponAction(float targetingTime)
+        {
             yield return new WaitForSeconds(targetingTime);
             enemyWeapon.WeaponAction();
             animator.enabled = true;
-            yield return new WaitForSeconds(0.1f);
-            animator.Play("RocketLunchDisarm");
-            yield return new WaitForSeconds(1f);
-            ResetSkill();
+            animator.Play("RocketLuncherDisarm");
         }
 
         private void CastSkill()

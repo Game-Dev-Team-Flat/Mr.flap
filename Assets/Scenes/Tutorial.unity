@@ -129,7 +129,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh24478
+  m_Name: pb_Mesh29828
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -9771,6 +9771,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3300005494099119083, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
+      propertyPath: dashSpeed
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 3300005494099119083, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
       propertyPath: jumpForce
       value: 13
       objectReference: {fileID: 0}
@@ -15879,7 +15883,7 @@ GameObject:
   - component: {fileID: 1285039340}
   - component: {fileID: 1285039339}
   - component: {fileID: 1285039338}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Cube (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

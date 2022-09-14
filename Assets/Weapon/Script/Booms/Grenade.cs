@@ -1,14 +1,15 @@
 using UnityEngine;
 
-namespace Weapon
+namespace Item.Weapon
 {
     public class Grenade : Boom
     {
         [Header("-Grenade Setting")]
+        [Tooltip("접착 여부")]
         [SerializeField]
         private bool adhesion;
         private bool isObjectAdhered = false;
-        private GameObject adheredObject;
+        private GameObject adheredObject; // 부착한 오브젝트
         private Vector3 adheredVector;
 
         private void Update()
@@ -36,7 +37,7 @@ namespace Weapon
                 adheredObject = collision.gameObject;
                 isObjectAdhered = true;
                 adheredVector = collision.transform.position - transform.position;
-                useGravity = false;
+                isUseGravity = false;
             }
         }
     }

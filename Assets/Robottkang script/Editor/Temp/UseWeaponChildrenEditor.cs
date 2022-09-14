@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Weapon;
+using Item.Weapon;
 
 [CustomEditor(typeof(UseWeapon), true)]
 public class UseWeaponChildrenEditor : Editor

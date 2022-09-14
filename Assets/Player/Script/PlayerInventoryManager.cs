@@ -14,6 +14,7 @@ public class PlayerInventoryManager : MonoBehaviour
     {
         playerInfo = GetComponent<PlayerInfo>();
         m_itemHand = Instantiate(playerInfo.inventory[playerInfo.inventorySlotNumber].item, transform.position + playerInfo.eyesOfObject.forward * itemPosition.z + playerInfo.eyesOfObject.up * itemPosition.y + playerInfo.eyesOfObject.right * itemPosition.x, playerInfo.eyesOfObject.rotation, playerInfo.eyesOfObject);
+        m_itemHand.layer = LayerMask.NameToLayer("Player");
     }
 
     private void Update()
@@ -52,5 +53,6 @@ public class PlayerInventoryManager : MonoBehaviour
     {
         Destroy(itemHand);
         m_itemHand = Instantiate(playerInfo.inventory[playerInfo.inventorySlotNumber].item, transform.position + playerInfo.eyesOfObject.forward * itemPosition.x + playerInfo.eyesOfObject.up * itemPosition.y + playerInfo.eyesOfObject.right * itemPosition.x, playerInfo.eyesOfObject.rotation, playerInfo.eyesOfObject);
+        m_itemHand.layer = LayerMask.NameToLayer("Player");
     }
 }

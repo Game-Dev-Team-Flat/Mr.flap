@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField]
+    private float gravityScale;
     private CharacterController m_characterController;
     private CharacterController characterController
     {
@@ -16,7 +18,18 @@ public class PlayerController : MonoBehaviour
             return m_characterController;
         }
     }
-    public float gravityDownForce;
+    private PlayerInfo m_playerInfo;
+    private PlayerInfo playerInfo
+    {
+        get
+        {
+            if (m_playerInfo == null)
+            {
+                m_playerInfo = GetComponent<PlayerInfo>();
+            }
+            return m_playerInfo;
+        }
+    }
     [Header("-Camera Setting")]
     [SerializeField]
     private Camera playerCamera;
@@ -49,6 +62,8 @@ public class PlayerController : MonoBehaviour
     public float hookShotLimitMaxDistance;
     private float hookShotSpeed;
     public float hookShotCoolTime;
+    [SerializeField]
+    private float hookShotLimitDistance;
     [HideInInspector]
     public State state = State.Normal;
     private Ray mouseRay;
@@ -92,6 +107,8 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed;
     private Vector3 characterVelocity;
     private float characterVelocityY;
+    public Vector3 extraCharacterVelocity;
+    public float extraCharacterVelocityY = 0;
     private Vector3 characterVelocityMomentum;
     [SerializeField]
     private float momentumDrag;
@@ -112,18 +129,18 @@ public class PlayerController : MonoBehaviour
     public float chopDriverCoolTime;
     public float chopDriverForce;
 
-    private PlayerParticleManager m_playerParticleManager;
-    private PlayerParticleManager playerParticleManager
-    {
-        get
-        {
-            if (m_playerParticleManager == null)
-            {
-                m_playerParticleManager = GetComponent<PlayerParticleManager>();
-            }
-            return m_playerParticleManager;
-        }
-    }
+    //private PlayerParticleManager m_playerParticleManager;
+    //private PlayerParticleManager playerParticleManager
+    //{
+    //    get
+    //    {
+    //        if (m_playerParticleManager == null)
+    //        {
+    //            m_playerParticleManager = GetComponent<PlayerParticleManager>();
+    //        }
+    //        return m_playerParticleManager;
+    //    }
+    //}
 
     public enum State
     {
@@ -141,31 +158,43 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (state == State.Normal)
+        if (!IsGroggy())
         {
-            PlayerMovement();
-            HookShot();
-            CheckIpnutDashKeyCode();
-            CheckConditionOfChopDriver();
+            switch (state)
+            {
+                case State.Normal:
+                    PlayerMovement();
+                    HookShot();
+                    CheckIpnutDashKeyCode();
+                    CheckConditionOfChopDriver();
+                    break;
+
+                case State.HookShotThrown:
+                    PlayerMovement();
+                    HookshotThrow();
+                    CheckIpnutDashKeyCode();
+                    break;
+
+                case State.HookShotFlyingPlayer:
+                    CheckIpnutDashKeyCode();
+                    HookShotMovement();
+                    break;
+
+                case State.DashingPlayer:
+                    Dash();
+                    break;
+
+                case State.ChopDriver:
+                    ChopDriver();
+                    break;
+            }
         }
-        if (state == State.HookShotThrown)
+        else
         {
-            PlayerMovement();
-            HookshotThrow();
-            CheckIpnutDashKeyCode();
-        }
-        if (state == State.HookShotFlyingPlayer)
-        {
-            CheckIpnutDashKeyCode();
-            HookShotMovement();
-        }
-        if (state == State.DashingPlayer)
-        {
-            Dash();
-        }
-        if (state == State.ChopDriver)
-        {
-            ChopDriver();
+            extraCharacterVelocityY += Physics.gravity.y * gravityScale * Time.deltaTime;
+            extraCharacterVelocity -= extraCharacterVelocity * Time.deltaTime * 4f;
+            extraCharacterVelocity.y = extraCharacterVelocityY;
+            characterController.Move(extraCharacterVelocity * Time.deltaTime);
         }
     }
 
@@ -179,7 +208,7 @@ public class PlayerController : MonoBehaviour
 
         PlayerJump();
 
-        characterVelocityY -= gravityDownForce * Time.deltaTime;
+        characterVelocityY += Physics.gravity.y * gravityScale * Time.deltaTime * 4f;
 
         characterVelocity.y = characterVelocityY;
 
@@ -292,7 +321,6 @@ public class PlayerController : MonoBehaviour
 
         characterController.Move(hookshotDir * hookShotSpeed * Time.deltaTime);
 
-        float hookShotLimitDistance = 1f;
         if (Vector3.Distance(transform.position, hitCollider.point) < hookShotLimitDistance || StopHookshotMovement())
         {
             ResetToNormalState();
@@ -401,7 +429,7 @@ public class PlayerController : MonoBehaviour
         {
             characterVelocityY = -chopDriverForce;
         }
-        else characterVelocityY -= gravityDownForce * Time.deltaTime;
+        else characterVelocityY += Physics.gravity.y * gravityScale * Time.deltaTime;
 
         characterVelocity.y = characterVelocityY;
         characterController.Move(characterVelocity * Time.deltaTime);
@@ -430,5 +458,12 @@ public class PlayerController : MonoBehaviour
     {
         characterVelocityY = 0;
         state = State.Normal;
+    }
+
+    private bool IsGroggy()
+    {
+        playerInfo.effect.stun -= Time.deltaTime;
+
+        return playerInfo.effect.stun > 0;
     }
 }

@@ -114,8 +114,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetLayerMask:
     serializedVersion: 2
-    m_Bits: 320
-  useGravity: 1
+    m_Bits: 448
+  isUseGravity: 0
   gravityDownForce: 20
   moveSpeed: 30
   holdingTime: 10

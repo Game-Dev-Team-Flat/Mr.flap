@@ -60,6 +60,5 @@ public class EntityInfo : MonoBehaviour
     public struct Inventory
     {
         public GameObject item;
-        public int count;
     }
 }

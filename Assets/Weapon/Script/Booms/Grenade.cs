@@ -14,8 +14,6 @@ namespace Item.Weapon
 
         private void Update()
         {
-            Movement();
-
             if (isObjectAdhered)
             {
                 transform.position = adheredObject.transform.position - adheredVector;
@@ -31,13 +29,16 @@ namespace Item.Weapon
         {
             if (adhesion)
             {
-                velocity = Vector3.zero;
-                Destroy(GetComponent<Rigidbody>());
+                Projectile projectile = GetComponent<Projectile>();
+                projectile.moveSpeed = 0f;
+                projectile.isUseGravity = false;
+
                 Destroy(GetComponent<Collider>());
-                adheredObject = collision.gameObject;
+                Destroy(GetComponent<Rigidbody>());
+
                 isObjectAdhered = true;
+                adheredObject = collision.gameObject;
                 adheredVector = collision.transform.position - transform.position;
-                isUseGravity = false;
             }
         }
     }

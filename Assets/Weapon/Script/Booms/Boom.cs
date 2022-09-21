@@ -10,13 +10,6 @@ namespace Item.Weapon
         [SerializeField]
         protected LayerMask targetLayerMask;
         public LayerMask ignoreLayerMask;
-        [SerializeField]
-        protected bool isUseGravity;
-        [SerializeField]
-        private float gravityDownForce;
-        public float moveSpeed;
-        protected Vector3 velocity;
-        protected float velocityY;
         [Tooltip("폭탄 유지 시간")]
         [SerializeField]
         protected float holdingTime;
@@ -26,8 +19,6 @@ namespace Item.Weapon
 
         private void Awake()
         {
-            velocity = transform.forward * moveSpeed;
-            velocityY = velocity.y;
             shotTime = Time.time;
         }
 
@@ -39,7 +30,7 @@ namespace Item.Weapon
             {
                 if (Physics.Raycast(transform.position, (objectHit.transform.position - transform.position).normalized, float.MaxValue, LayerMask.GetMask("Floor")))
                 {
-                    return;
+                    continue;
                 }
 
                 if (((int)Mathf.Pow(2, objectHit.transform.gameObject.layer) & targetLayerMask & ~ignoreLayerMask) != 0)
@@ -49,16 +40,6 @@ namespace Item.Weapon
             }
             // 이펙트 발사
             Destroy(gameObject);
-        }
-
-        protected void Movement()
-        {
-            if (isUseGravity)
-            {
-                velocityY -= gravityDownForce * Time.deltaTime;
-                velocity.y = velocityY;
-            }
-            transform.position = transform.position + velocity * Time.deltaTime;
         }
     }
 }

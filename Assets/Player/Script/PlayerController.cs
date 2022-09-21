@@ -124,10 +124,13 @@ public class PlayerController : MonoBehaviour
 
     [Header("-Chop Driver")]
     [SerializeField]
-    private float heightCanChopDriver;
+    private float heightForChopDriver;
     private bool isChopDrive = false;
     public float chopDriverCoolTime;
     public float chopDriverForce;
+    public float chopDriverDamage;
+    public float chopDriverDamageRadius;
+    public float chopDriverStunTime;
 
     //private PlayerParticleManager m_playerParticleManager;
     //private PlayerParticleManager playerParticleManager
@@ -408,7 +411,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Physics.SphereCast(transform.position, characterController.radius, Vector3.down, out RaycastHit hitFloor, float.MaxValue, LayerMask.GetMask("Floor")))
         {
-            if ((transform.position.y - hitFloor.point.y) > heightCanChopDriver)
+            if ((transform.position.y - hitFloor.point.y) > heightForChopDriver)
             {
                 Debug.Log("Can ChopDriver");
                 if (Input.GetKeyDown(KeyCode.Q) && !isChopDrive)
@@ -416,7 +419,7 @@ public class PlayerController : MonoBehaviour
                     characterVelocity = Vector3.zero + Vector3.down * chopDriverForce;
                     characterVelocityMomentum = Vector3.zero;
                     state = State.ChopDriver;
-                    characterVelocityY = 15f;
+                    characterVelocityY = 5f;
                     cameraFov.SetCameraFov(chopdriverFov);
                 }
             }
@@ -436,9 +439,23 @@ public class PlayerController : MonoBehaviour
 
         if (characterController.isGrounded)
         {
+            TakeDamageChopDriver();
+
             StartCoroutine(ReloadChopDriver(chopDriverCoolTime));
             cameraFov.SetCameraFov(normalFov);
             ResetToNormalState();
+        }
+    }
+
+    private void TakeDamageChopDriver()
+    {
+        RaycastHit[] hitEnemies = Physics.SphereCastAll(transform.position, chopDriverDamageRadius, Vector3.up, 0f, LayerMask.GetMask("Enemy"));
+        Debug.Log(LayerMask.GetMask("Enemy"));
+        foreach (RaycastHit hitEnemy in hitEnemies)
+        {
+            EntityInfo enemyInfo = hitEnemy.transform.GetComponent<EntityInfo>();
+            enemyInfo.effect.stun = chopDriverStunTime;
+            enemyInfo.takenDamage = chopDriverDamage;
         }
     }
 

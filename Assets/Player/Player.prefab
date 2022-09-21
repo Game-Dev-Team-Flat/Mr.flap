@@ -245,11 +245,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_inventory:
   - item: {fileID: 5618889962838469731, guid: 2d733e8851b79044683f6a33a24e7cfa, type: 3}
-    count: 1
-  - item: {fileID: 41958176849725547, guid: 2b8e8abc4b70fd746a28197dda5919b5, type: 3}
-    count: 1
+  - item: {fileID: 8035208931932613645, guid: a11143a3a59ce6c46b14d0cb4d649b12, type: 3}
   - item: {fileID: 1967774430030789185, guid: c710770ffdd4e164d915ba794db932a8, type: 3}
-    count: 1
+  - item: {fileID: 6593453705572483922, guid: 834d0e265b4022d408ed4944bee064c5, type: 3}
   maxHp: 100
   m_currentHp: 100
   hpReduceRate: 10
@@ -290,14 +288,18 @@ MonoBehaviour:
   addExtraJumpCoolTime: 3
   moveSpeed: 10
   extraCharacterVelocity: {x: 0, y: 0, z: 0}
+  extraCharacterVelocityY: 0
   momentumDrag: 1
   momentumExtraSpeed: 1
   dashSpeed: 50
   dashCoolTime: 1
   dashDurationTime: 0.4
-  heightCanChopDriver: 5
+  heightForChopDriver: 4
   chopDriverCoolTime: 1
   chopDriverForce: 100
+  chopDriverDamage: 10
+  chopDriverDamageRadius: 10
+  chopDriverStunTime: 2
 --- !u!114 &3300005494099119092
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -110,6 +110,10 @@ namespace Enemy
                 m_enemyState = DetermineState();
                 Movement();
             }
+            else
+            {
+                navMeshAgent.enabled = false;
+            }
         }
 
         DetectTarget.DetectingState detectingState;

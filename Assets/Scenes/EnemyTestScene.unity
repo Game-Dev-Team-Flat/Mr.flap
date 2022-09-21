@@ -719,34 +719,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 922654509553728323, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
-      propertyPath: m_inventory.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 922654509553728323, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
-      propertyPath: m_inventory.Array.data[1].item
-      value: 
-      objectReference: {fileID: 8035208931932613645, guid: a11143a3a59ce6c46b14d0cb4d649b12, type: 3}
-    - target: {fileID: 922654509553728323, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
-      propertyPath: m_inventory.Array.data[2].item
-      value: 
-      objectReference: {fileID: 1967774430030789185, guid: c710770ffdd4e164d915ba794db932a8, type: 3}
-    - target: {fileID: 922654509553728323, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
-      propertyPath: m_inventory.Array.data[3].item
-      value: 
-      objectReference: {fileID: 6593453705572483922, guid: 834d0e265b4022d408ed4944bee064c5, type: 3}
-    - target: {fileID: 922654509553728323, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
-      propertyPath: m_inventory.Array.data[4].item
-      value: 
-      objectReference: {fileID: 41958176849725547, guid: 2b8e8abc4b70fd746a28197dda5919b5, type: 3}
-    - target: {fileID: 922654509553728323, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
-      propertyPath: m_inventory.Array.data[3].count
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 922654509553728323, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
-      propertyPath: m_inventory.Array.data[4].count
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3300005494099119080, guid: c3620cf9e9e76bb4d8e539bb95a1ba03, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -809,7 +781,7 @@ GameObject:
   - component: {fileID: 1352175880}
   - component: {fileID: 1352175879}
   - component: {fileID: 1352175878}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1579,9 +1551,5 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3786217330079729498, guid: 4ecf84d9d2d799b4cb4d531e16d53d93, type: 3}
-      propertyPath: Dotsite
-      value: 
-      objectReference: {fileID: 2304238797442644053, guid: 6bbcfccee36d21d4bb2d9d4d51f84645, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ecf84d9d2d799b4cb4d531e16d53d93, type: 3}

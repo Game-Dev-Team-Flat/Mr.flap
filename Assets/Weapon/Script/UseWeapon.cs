@@ -65,14 +65,26 @@ namespace Item.Weapon
         protected IEnumerator OnReload(Gun gun)
         {
             m_isReload = true;
-            float reloadTime = gun.reloadTime;
-            while (reloadTime > 0)
+
+            yield return new WaitForSeconds(gun.reloadTime);
+
+            if (gun.infinityAmmo)
             {
-                reloadTime -= Time.deltaTime;
-                yield return new WaitForFixedUpdate();
+                gun.currentAmmo = gun.magazineMaxAmmo;
             }
+            else if (gun.ownAmmo < gun.magazineMaxAmmo) // 탄창 요구 총량이 가진 총알보다 많을 때
+            {
+                gun.currentAmmo = gun.ownAmmo;
+                gun.ownAmmo = 0;
+            }
+            else // 가진 총알이 충분할때
+            {
+                gun.ownAmmo -= gun.magazineMaxAmmo;
+                gun.currentAmmo = gun.magazineMaxAmmo;
+            }
+
             Debug.Log("Reload Complete");
-            gun.currentAmmo = gun.maxAmmo;
+
             m_isReload = false;
         }
 

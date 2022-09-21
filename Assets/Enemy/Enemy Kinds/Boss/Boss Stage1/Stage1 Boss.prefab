@@ -4924,8 +4924,10 @@ MonoBehaviour:
   inputReload: 0
   startFire: 0
   stopFire: 0
-  maxAmmo: 999
-  currentAmmo: 999
+  m_infinityAmmo: 1
+  ownAmmo: 0
+  magazineMaxAmmo: 9999
+  currentAmmo: 9999
   fireRate: 0.2
   reloadTime: 5
   autoReload: 0
@@ -4933,8 +4935,7 @@ MonoBehaviour:
   damage: 0
   shotMode: 1
   currentShotMode: 1
-  m_bulletParticle: {fileID: 0}
-  rocket: {fileID: 5553917558969590748, guid: cddf2b0426dc3ce4b9595bd5e1624c5c, type: 3}
+  projectileObject: {fileID: 5553917558969590748, guid: cddf2b0426dc3ce4b9595bd5e1624c5c, type: 3}
 --- !u!1 &3350015122593814149
 GameObject:
   m_ObjectHideFlags: 0
@@ -5353,18 +5354,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_inventory:
   - item: {fileID: 4229699874228052227}
-    count: 1
   - item: {fileID: 2554701176031181488}
-    count: 1
   - item: {fileID: 5545854034866533931}
-    count: 1
   - item: {fileID: 5545854035031928090}
-    count: 1
   maxHp: 100
   m_currentHp: 100
   hpReduceRate: 10
   takenDamage: 0
   currentBossPage: 0
+  bossHpBar: {fileID: 0}
 --- !u!114 &3350015123277269856
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5577,7 +5575,9 @@ MonoBehaviour:
   inputReload: 0
   startFire: 0
   stopFire: 0
-  maxAmmo: 24
+  m_infinityAmmo: 1
+  ownAmmo: 0
+  magazineMaxAmmo: 24
   currentAmmo: 24
   fireRate: 10
   reloadTime: 3
@@ -5586,7 +5586,7 @@ MonoBehaviour:
   damage: 10
   shotMode: 3
   currentShotMode: 2
-  m_bulletParticle: {fileID: 0}
+  projectileObject: {fileID: 6835890226968627786, guid: b7bb9c325fcf5824b98db65d59d40beb, type: 3}
 --- !u!1 &5545854034866533931
 GameObject:
   m_ObjectHideFlags: 0
@@ -5695,8 +5695,10 @@ MonoBehaviour:
   inputReload: 0
   startFire: 0
   stopFire: 0
-  maxAmmo: 999
-  currentAmmo: 999
+  m_infinityAmmo: 1
+  ownAmmo: 0
+  magazineMaxAmmo: 9999
+  currentAmmo: 9999
   fireRate: 0.3
   reloadTime: 1
   autoReload: 1
@@ -5704,8 +5706,7 @@ MonoBehaviour:
   damage: 0
   shotMode: 1
   currentShotMode: 1
-  m_bulletParticle: {fileID: 0}
-  rocket: {fileID: 7345579554399628515, guid: fb2260ba247c23349a15e669b0f43602, type: 3}
+  projectileObject: {fileID: 7345579554399628515, guid: fb2260ba247c23349a15e669b0f43602, type: 3}
 --- !u!1001 &3863240930647243360
 PrefabInstance:
   m_ObjectHideFlags: 0

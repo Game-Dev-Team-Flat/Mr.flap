@@ -21,7 +21,10 @@ public class BossInfo : EntityInfo
             currentBossPage = BossPage.Page1;
         }
 
-        bossHpBar.value = currentHp / maxHp;
+        if (bossHpBar != null)
+        {
+            bossHpBar.value = currentHp / maxHp;
+        }
     }
 
     public enum BossPage

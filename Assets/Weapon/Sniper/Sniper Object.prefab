@@ -53,7 +53,9 @@ MonoBehaviour:
   inputReload: 0
   startFire: 0
   stopFire: 0
-  maxAmmo: 8
+  m_infinityAmmo: 1
+  ownAmmo: 0
+  magazineMaxAmmo: 8
   currentAmmo: 8
   fireRate: 0.25
   reloadTime: 6
@@ -62,7 +64,7 @@ MonoBehaviour:
   damage: 40
   shotMode: 1
   currentShotMode: 1
-  m_bulletParticle: {fileID: 0}
+  projectileObject: {fileID: 6835890226968627786, guid: b7bb9c325fcf5824b98db65d59d40beb, type: 3}
 --- !u!1 &4801732038575183141
 GameObject:
   m_ObjectHideFlags: 0

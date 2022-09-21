@@ -9,7 +9,10 @@ namespace Item.Weapon
         //public AudioClip audioClipFire;
 
         [Header("-Public Gun setting")]
-        public int maxAmmo;
+        [SerializeField]
+        private bool m_infinityAmmo;
+        public int ownAmmo;
+        public int magazineMaxAmmo;
         public int currentAmmo;
         [Tooltip("Shot Per Second")]
         public float fireRate;
@@ -21,18 +24,10 @@ namespace Item.Weapon
         public ShotMode shotMode;
         public ShotMode currentShotMode;
         [SerializeField]
-        private ParticleSystem m_bulletParticle;
-        private ParticleSystem bulletParticle
-        {
-            get
-            {
-                if (m_bulletParticle == null)
-                {
-                    m_bulletParticle = standardObjectOfShot.GetComponent<ParticleSystem>();
-                }
-                return m_bulletParticle;
-            }
-        }
+        protected GameObject projectileObject;
+        protected GameObject LaunchedProjectile;
+
+        public bool infinityAmmo => m_infinityAmmo;
 
         public enum ShotMode
         {
@@ -88,7 +83,7 @@ namespace Item.Weapon
                         break;
                 }
             }
-            if (autoReload && currentAmmo <= 0 && !isReload)
+            if (autoReload && !isReload && currentAmmo <= 0 && (ownAmmo > 0 || infinityAmmo))
             {
                 StartCoroutine(nameof(OnReload), this);
             }
@@ -98,19 +93,12 @@ namespace Item.Weapon
         {
             if (Time.time - lastFireTime > 1 / fireRate)
             {
-                PlayBulletParticle();
                 currentAmmo--;
-                Hit(damage, range);
+                LaunchedProjectile = Instantiate(projectileObject, standardObjectOfShot.position, Quaternion.LookRotation(transform.forward, Vector3.up));
+                LaunchedProjectile.GetComponent<Projectile>().gunUsingThis = this;
+                //Hit(damage, range);
                 lastFireTime = Time.time;
                 //PlaySound(gun.audioClipFire);
-            }
-        }
-
-        public virtual void PlayBulletParticle()
-        {
-            if (bulletParticle != null)
-            {
-                bulletParticle.Play();
             }
         }
     }

@@ -6,8 +6,6 @@ namespace Item.Weapon
     {
         private void Update()
         {
-            Movement();
-
             if (Time.time - shotTime > holdingTime)
             {
                 Explosion();

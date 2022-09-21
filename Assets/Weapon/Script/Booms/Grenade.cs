@@ -1,20 +1,19 @@
 using UnityEngine;
 
-namespace Weapon
+namespace Item.Weapon
 {
     public class Grenade : Boom
     {
         [Header("-Grenade Setting")]
+        [Tooltip("접착 여부")]
         [SerializeField]
         private bool adhesion;
         private bool isObjectAdhered = false;
-        private GameObject adheredObject;
+        private GameObject adheredObject; // 부착한 오브젝트
         private Vector3 adheredVector;
 
         private void Update()
         {
-            Movement();
-
             if (isObjectAdhered)
             {
                 transform.position = adheredObject.transform.position - adheredVector;
@@ -30,13 +29,16 @@ namespace Weapon
         {
             if (adhesion)
             {
-                velocity = Vector3.zero;
-                Destroy(GetComponent<Rigidbody>());
+                Projectile projectile = GetComponent<Projectile>();
+                projectile.moveSpeed = 0f;
+                projectile.isUseGravity = false;
+
                 Destroy(GetComponent<Collider>());
-                adheredObject = collision.gameObject;
+                Destroy(GetComponent<Rigidbody>());
+
                 isObjectAdhered = true;
+                adheredObject = collision.gameObject;
                 adheredVector = collision.transform.position - transform.position;
-                useGravity = false;
             }
         }
     }

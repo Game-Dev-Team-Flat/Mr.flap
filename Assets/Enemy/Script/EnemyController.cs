@@ -6,49 +6,54 @@ using UnityEngine.AI;
 
 namespace Enemy
 {
-    public class EnemyController : MonoBehaviour
+    public abstract class EnemyController : MonoBehaviour
     {
-        [SerializeField]
-        private Transform path;
-        [Space(20)]
-        [SerializeField]
-        TextMeshPro state;
-        [SerializeField]
-        private DetectTarget detectTarget;
-        [SerializeField]
-        private float normalSpeed;
-        [SerializeField]
-        private float runningSpeed;
         private float m_detectedTime = 0f;
-        private float detectedTime // 0 이상 identifyingTime 이하로 제한
+        private int m_currentNode = 0;
+        private EnemyState m_enemyState = EnemyState.DetectingNothing;
+        private GameObject m_targetObject;
+        private EntityInfo m_enemyInfo;
+        private NavMeshAgent m_navMeshAgent;
+
+        [SerializeField]
+        protected Transform path;
+        [Space(20)]
+
+        [SerializeField]
+        protected DetectTarget detectTarget;
+        [SerializeField]
+        protected float identifyingTime;
+        protected NavMeshAgent navMeshAgent
+        {
+            get
+            {
+                if (m_navMeshAgent == null)
+                {
+                    m_navMeshAgent = GetComponent<NavMeshAgent>();
+                }
+                return m_navMeshAgent;
+            }
+        }
+        protected Vector3 LastDetectedPosition;
+        [Header("-Move Setting")]
+        [SerializeField]
+        protected float normalSpeed;
+        [SerializeField]
+        protected float runningSpeed;
+        protected float detectedTime    // 0 이상 identifyingTime 이하로 제한
         {
             get => m_detectedTime;
             set
             {
-                if (value < 0)
-                {
-                    m_detectedTime = 0;
-                }
-                else if (value > identifyingTime)
-                {
-                    m_detectedTime = identifyingTime;
-                }
-                else
-                {
-                    m_detectedTime = value;
-                }
+                Mathf.Clamp(value, 0f, identifyingTime);
+                m_detectedTime = value;
             }
         }
-        [SerializeField]
-        private float identifyingTime;
-        private NavMeshAgent navMeshAgent;
-        private int m_currentNode = 0;
-        private int currentNode // 0부터 path.childCount까지 순환
+        protected int currentNode       // 0부터 path.childCount까지 순환
         {
             get => m_currentNode;
             set
             {
-
                 if (value < 0)
                 {
                     m_currentNode = path.childCount - 1;
@@ -63,10 +68,8 @@ namespace Enemy
                 }
             }
         }
-        private EnemyState m_enemyState = EnemyState.DetectingNothing;
         public EnemyState enemyState => m_enemyState;
-        private GameObject m_targetObject;
-        public GameObject targetObject
+        public GameObject targetObject  // null은 담지 않음
         {
             get => m_targetObject;
             set
@@ -77,63 +80,75 @@ namespace Enemy
                 }
             }
         }
-        private Vector3 LastDetectedPosition;
+        public EntityInfo enemyInfo
+        {
+            get
+            {
+                if (m_enemyInfo == null)
+                {
+                    m_enemyInfo = GetComponent<EntityInfo>();
+                }
+                return m_enemyInfo;
+            }
+        }
 
         public enum EnemyState
         {
             DetectingNothing,
-            DetectingSomthing,
+            DetectingSomething,
             DetectingTarget,
             MissingTargetSideways,
             TargetOverDetectingDistance,
             TargetHindInObject
         }
 
-        private void Awake()
+        protected virtual void Update()
         {
-            navMeshAgent = GetComponent<NavMeshAgent>();
+            if (!IsGroggy())
+            {
+                navMeshAgent.enabled = true;
+                m_enemyState = DetermineState();
+                Movement();
+            }
+            else
+            {
+                navMeshAgent.enabled = false;
+            }
         }
 
-        private void Update()
+        DetectTarget.DetectingState detectingState;
+        protected EnemyState DetermineState()
         {
-            state.text = enemyState.ToString();
+            detectingState = detectTarget.SearchTarget();
 
-            m_enemyState = DetermineState();
-            detectTarget.SearchTarget(detectTarget.targetLayerMask);
-            Movement();
-        }
-
-        private EnemyState DetermineState()
-        {
-            if (detectTarget.detectedObject != null) // 발견되면
+            if (detectingState == DetectTarget.DetectingState.DetectingTarget) // 발견되면
             {
                 if (m_enemyState != EnemyState.DetectingTarget && detectedTime < identifyingTime)
                 {
-                    detectedTime += detectTarget.detectionDistance / Vector3.Distance(transform.position, detectTarget.detectedObject.transform.position) * Time.deltaTime;
-                    return EnemyState.DetectingSomthing;
+                    detectedTime += detectTarget.detectionDistance * Time.deltaTime;// / Vector3.Distance(transform.position, detectTarget.detectedObject.transform.position) * Time.deltaTime;
+                    return EnemyState.DetectingSomething;
                 }
 
                 return EnemyState.DetectingTarget;
             }
             else // 발견이 안되면
             {
-                if (m_enemyState == EnemyState.DetectingSomthing && detectedTime > 0f) // 자꾸 DetectTarget이 Null값이 되는 버그
+                if (m_enemyState == EnemyState.DetectingSomething && detectedTime > 0f)
                 {
-                    detectedTime -= Time.deltaTime / 2f;
-                    return EnemyState.DetectingSomthing;
+                    ReduceDetectedTime(0.5f);
+                    return EnemyState.DetectingSomething;
                 }
                 else if (m_enemyState == EnemyState.DetectingTarget)
                 {
                     if (Vector3.Distance(transform.position, targetObject.transform.position) < detectTarget.detectionDistance)
                     {
-                        Physics.Raycast(transform.position, (targetObject.transform.position - transform.position).normalized, out RaycastHit raycastHit);
-                        if ((int)Mathf.Pow(2, raycastHit.transform.gameObject.layer) == detectTarget.targetLayerMask)
+                        if (detectingState == DetectTarget.DetectingState.TargetInDetectingArea)
                         {
-                            return EnemyState.MissingTargetSideways;
+                            return EnemyState.TargetHindInObject;
                         }
                         else
                         {
-                            return EnemyState.TargetHindInObject; // 이 상태 구현
+                            return EnemyState.MissingTargetSideways;
                         }
                     }
                     else
@@ -141,44 +156,48 @@ namespace Enemy
                         return EnemyState.TargetOverDetectingDistance;
                     }
                 }
-                else if ((m_enemyState == EnemyState.MissingTargetSideways || m_enemyState == EnemyState.TargetOverDetectingDistance || m_enemyState == EnemyState.TargetHindInObject) && detectedTime > 0f)
+                else if (m_enemyState == EnemyState.MissingTargetSideways)
+                {
+                    if (Vector3.Distance(transform.position, targetObject.transform.position) > detectTarget.detectionDistance) // 멀어지면 따라 갈 수 있게
+                    {
+                        return EnemyState.TargetOverDetectingDistance;
+                    }
+
+                    return m_enemyState;
+                }
+                else if ((m_enemyState == EnemyState.TargetHindInObject || m_enemyState == EnemyState.TargetOverDetectingDistance) && detectedTime > 0f)
                 {
                     return m_enemyState;
                 }
                 else
                 {
-                    detectedTime -= Time.deltaTime;
                     return EnemyState.DetectingNothing;
                 }
             }
         }
 
-        private void Movement()
+        protected void Movement()
         {
             targetObject = detectTarget.detectedObject;
-            switch (m_enemyState)
+            switch (enemyState)
             {
                 case EnemyState.DetectingNothing:
-                    Patrol();
+                    HandleDetectingNothing();
+                    break;
+                case EnemyState.DetectingSomething:
+                    HandleDetectingSomething();
                     break;
                 case EnemyState.DetectingTarget:
-                    LookAtTarget(targetObject.transform.position);
-                    StopNavMeshAgentMovement();
-                    LastDetectedPosition = targetObject.transform.position;
-                    break;
-                case EnemyState.DetectingSomthing:
-                    StopNavMeshAgentMovement();
-                    LookAtTarget(targetObject.transform.position);
+                    HandleDetectingTarget();
                     break;
                 case EnemyState.MissingTargetSideways:
-                    StopNavMeshAgentMovement();
-                    LookAtTarget(targetObject.transform.position);
+                    HandleMissingTargetSideways();
                     break;
                 case EnemyState.TargetOverDetectingDistance:
-                    ChaseTarget(LastDetectedPosition);
+                    HandleTargetOverDetectingDistance();
                     break;
                 case EnemyState.TargetHindInObject:
-                    ChaseTarget(LastDetectedPosition);
+                    HandleTargetHindInObject();
                     break;
                 default:
                     StopNavMeshAgentMovement();
@@ -186,9 +205,47 @@ namespace Enemy
             }
         }
 
-        private void Patrol()
+        protected virtual void HandleDetectingNothing()
+        {
+            Patrol();
+        }
+
+        protected virtual void HandleDetectingSomething()
+        {
+            StopNavMeshAgentMovement();
+            LookAtTarget(targetObject.transform.position, navMeshAgent.angularSpeed / 180f);
+        }
+
+        protected abstract void HandleDetectingTarget();
+        
+        protected virtual void HandleMissingTargetSideways()
+        {
+            StopNavMeshAgentMovement();
+            LookAtTarget(targetObject.transform.position, navMeshAgent.angularSpeed / 180f);
+        }
+
+        protected virtual void HandleTargetOverDetectingDistance()
+        {
+            ChaseTarget(targetObject.transform.position, 1f);
+        }
+
+        protected virtual void HandleTargetHindInObject()
+        {
+            ChaseTarget(targetObject.transform.position, 1f);
+        }
+
+        /// <summary>
+        /// path를 따라 움직임
+        /// </summary>
+        protected void Patrol()
         {
             navMeshAgent.speed = normalSpeed;
+
+            if (path == null)
+            {
+                return;
+            }
+
             if (Vector3.Distance(transform.position, path.GetChild(currentNode).position) > 0.3f)
             {
                 navMeshAgent.destination = path.GetChild(currentNode).position;
@@ -199,27 +256,48 @@ namespace Enemy
             }
         }
 
-        private void ChaseTarget(Vector3 targetPosition)
+        /// <summary>
+        /// targetPosition과의 거리가 stoppingDistance보다 짧아질 때까지 추격
+        /// </summary>
+        protected void ChaseTarget(Vector3 targetPosition, float stoppingDistance)
         {
             navMeshAgent.speed = runningSpeed;
-            navMeshAgent.destination = targetPosition;
-            if (Vector3.Distance(transform.position - Vector3.up * transform.position.y, targetPosition - Vector3.up * targetPosition.y) < 1f)
+            if (Vector3.Distance(transform.position - Vector3.up * transform.position.y, targetPosition - Vector3.up * targetPosition.y) > stoppingDistance)
             {
-                detectedTime -= Time.deltaTime;
+                navMeshAgent.destination = targetPosition;
+            }
+            else
+            {
+                navMeshAgent.destination = transform.position;
             }
         }
 
-        private void StopNavMeshAgentMovement()
+        protected void StopNavMeshAgentMovement()
         {
             navMeshAgent.destination = transform.position;
         }
 
-        private void LookAtTarget(Vector3 target)
+        /// <summary>
+        /// target 방향을 바라옴 (y축으로만 주시)
+        /// </summary>
+        protected void LookAtTarget(Vector3 target, float angularSpeed)
         {
             navMeshAgent.speed = 0f;
             Quaternion targetRotation = Quaternion.LookRotation(target - transform.position - Vector3.up * target.y + Vector3.up * transform.position.y);
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * navMeshAgent.angularSpeed / 180f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * angularSpeed);
+        }
+
+        protected void ReduceDetectedTime(float declineSpeed)
+        {
+            detectedTime -= Time.deltaTime * declineSpeed;
+        }
+
+        protected bool IsGroggy()
+        {
+            enemyInfo.effect.stun -= Time.deltaTime;
+
+            return enemyInfo.effect.stun > 0;
         }
     }
 }

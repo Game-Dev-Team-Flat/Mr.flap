@@ -2,20 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Weapon
+namespace Item.Weapon
 {
     public class Boom : MonoBehaviour
     {
         [Header("-Boom Setting")]
         [SerializeField]
         protected LayerMask targetLayerMask;
-        [SerializeField]
-        protected bool useGravity;
-        [SerializeField]
-        private float gravityDownForce;
-        public float moveSpeed;
-        protected Vector3 velocity;
-        protected float velocityY;
+        public LayerMask ignoreLayerMask;
+        [Tooltip("폭탄 유지 시간")]
         [SerializeField]
         protected float holdingTime;
         protected float shotTime;
@@ -24,37 +19,27 @@ namespace Weapon
 
         private void Awake()
         {
-            velocity = transform.forward * moveSpeed;
-            velocityY = velocity.y;
             shotTime = Time.time;
         }
 
         protected void Explosion()
         {
             Debug.Log("Boom");
-            RaycastHit[] objectsHit = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, ~LayerMask.GetMask("Floor"));
+            RaycastHit[] objectsHit = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, (~LayerMask.GetMask("Floor") | ~Physics.IgnoreRaycastLayer) & targetLayerMask);
             foreach (RaycastHit objectHit in objectsHit)
             {
-                if (Physics.Raycast(transform.position, (objectHit.transform.position - transform.position).normalized, out RaycastHit raycastHit, float.MaxValue, ~LayerMask.GetMask("Floor")))
+                if (Physics.Raycast(transform.position, (objectHit.transform.position - transform.position).normalized, float.MaxValue, LayerMask.GetMask("Floor")))
                 {
-                    if (objectHit.transform.TryGetComponent(out EntityInfo entityInfo))
-                    {
-                        entityInfo.takenDamage += (entityInfo.transform.gameObject.layer == LayerMask.GetMask("Player")) ? (explosionDamage / 10f) : explosionDamage;
-                    }
+                    continue;
+                }
+
+                if (((int)Mathf.Pow(2, objectHit.transform.gameObject.layer) & targetLayerMask & ~ignoreLayerMask) != 0)
+                {
+                    objectHit.transform.GetComponent<EntityInfo>().takenDamage += explosionDamage;
                 }
             }
             // 이펙트 발사
             Destroy(gameObject);
-        }
-
-        protected void Movement()
-        {
-            if (useGravity)
-            {
-                velocityY -= gravityDownForce * Time.deltaTime;
-                velocity.y = velocityY;
-            }
-            transform.position = transform.position + velocity * Time.deltaTime;
         }
     }
 }

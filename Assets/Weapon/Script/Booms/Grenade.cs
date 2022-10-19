@@ -35,6 +35,7 @@ namespace Item.Weapon
 
                 Destroy(GetComponent<Collider>());
                 Destroy(GetComponent<Rigidbody>());
+                Destroy(GetComponent<Projectile>());
 
                 isObjectAdhered = true;
                 adheredObject = collision.gameObject;

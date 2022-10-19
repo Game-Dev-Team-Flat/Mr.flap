@@ -39,20 +39,31 @@ public class EntityInfo : MonoBehaviour
     
     public struct Effect
     {
+        public bool die;
         public float stun;
     }
 
     protected virtual void Update()
     {
         CalculateDamage();
+        Die();
     }
 
-    protected void CalculateDamage()
+    protected virtual void CalculateDamage()
     {
         if (takenDamage > 0)
         {
-            currentHp -= Time.deltaTime * hpReduceRate;
-            takenDamage -= Time.deltaTime * hpReduceRate;
+            currentHp -= takenDamage;
+            takenDamage = 0;
+        }
+    }
+
+    protected virtual void Die()
+    {
+        if (currentHp <= 0 && CompareTag("Enemy"))
+        {
+            //죽는 효과
+            Destroy(gameObject);
         }
     }
 

@@ -12,7 +12,7 @@ namespace Enemy
         private int m_currentNode = 0;
         private EnemyState m_enemyState = EnemyState.DetectingNothing;
         private GameObject m_targetObject;
-        private EntityInfo m_enemyInfo;
+        private EnemyInfo m_enemyInfo;
         private NavMeshAgent m_navMeshAgent;
 
         [SerializeField]
@@ -86,7 +86,7 @@ namespace Enemy
             {
                 if (m_enemyInfo == null)
                 {
-                    m_enemyInfo = GetComponent<EntityInfo>();
+                    m_enemyInfo = GetComponent<EnemyInfo>();
                 }
                 return m_enemyInfo;
             }

@@ -12,7 +12,7 @@ public class EntityInfo : MonoBehaviour
     [SerializeField]
     private float m_currentHp;
     public float takenDamage;
-    public Effect effect = new Effect { die = false, stun = 0 };
+    public Effect effect = new Effect { Die = false, GracePeriod = 0f, Stun = 0f };
 
     public Inventory[] inventory => m_inventory;
     public int inventorySlotNumber // 인벤토리의 슬롯 넘버를 제한
@@ -38,8 +38,9 @@ public class EntityInfo : MonoBehaviour
     
     public struct Effect
     {
-        public bool die;
-        public float stun;
+        public bool Die;
+        public float GracePeriod;
+        public float Stun;
     }
 
     protected virtual void Update()
@@ -49,6 +50,13 @@ public class EntityInfo : MonoBehaviour
 
     protected virtual void CalculateDamage()
     {
+        if (effect.GracePeriod > 0f)
+        {
+            effect.GracePeriod -= Time.deltaTime;
+            takenDamage = 0;
+            return;
+        }
+
         if (takenDamage > 0)
         {
             currentHp -= takenDamage;

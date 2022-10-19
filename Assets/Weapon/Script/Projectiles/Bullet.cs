@@ -10,16 +10,17 @@ namespace Item.Weapon
             Destroy(gameObject, 10);
         }
 
-        private void OnCollisionEnter(Collision collision)
+        private void OnTriggerEnter(Collider other)
         {
-            if (((int)Mathf.Pow(2, collision.gameObject.layer) & (gunUsingThis.targetLayerMask | LayerMask.GetMask("Floor"))) != 0)
+            if (((int)Mathf.Pow(2, other.gameObject.layer) & (gunUsingThis.targetLayerMask | LayerMask.GetMask("Floor"))) != 0 && !other.transform.CompareTag(gunUsingThis.transform.root.tag))
             {
-                if (collision.transform.TryGetComponent(out EntityInfo entityInfo))
+                if (other.transform.TryGetComponent(out EntityInfo entityInfo))
                 {
                     entityInfo.takenDamage += gunUsingThis.damage;
                 }
                 Destroy(gameObject);
             }
+            
         }
     }
 }

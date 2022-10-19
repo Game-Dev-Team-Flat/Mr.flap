@@ -455,7 +455,7 @@ MonoBehaviour:
   identifyingTime: 1
   normalSpeed: 3
   runningSpeed: 8
-  Dotsite: {fileID: 2304238797442644053, guid: 6bbcfccee36d21d4bb2d9d4d51f84645, type: 3}
+  dotsite: {fileID: 2304238797442644053, guid: 6bbcfccee36d21d4bb2d9d4d51f84645, type: 3}
 --- !u!114 &238566758264778626
 MonoBehaviour:
   m_ObjectHideFlags: 0

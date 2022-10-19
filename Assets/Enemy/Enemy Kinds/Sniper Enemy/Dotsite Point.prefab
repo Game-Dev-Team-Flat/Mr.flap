@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 7112213894414626163}
   - component: {fileID: 1909094067937598138}
   - component: {fileID: 6751814343694936175}
+  - component: {fileID: 178607509592392506}
+  - component: {fileID: -5876760467701271063}
   m_Layer: 2
   m_Name: Dotsite Point
   m_TagString: Untagged
@@ -83,3 +85,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &178607509592392506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2304238797442644053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d736dfe18294f3449ac72d182ebab43c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!135 &-5876760467701271063
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2304238797442644053}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}

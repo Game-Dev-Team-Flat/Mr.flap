@@ -354,7 +354,7 @@ GameObject:
   m_Component:
   - component: {fileID: 238566758264778633}
   - component: {fileID: 4431956341805969960}
-  - component: {fileID: 238566758264778627}
+  - component: {fileID: 4315779226998785990}
   - component: {fileID: 238566758264778636}
   - component: {fileID: 3786217330079729498}
   - component: {fileID: 238566758264778626}
@@ -400,7 +400,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &238566758264778627
+--- !u!114 &4315779226998785990
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -409,15 +409,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 238566758264778644}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 563e4716c4e74844aa515abd0f877bff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7c24bea6193d74e468adae2895bdeabb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_inventory:
   - item: {fileID: 7671107986822641360}
-    count: 1
   maxHp: 50
   m_currentHp: 50
-  hpReduceRate: 10
   takenDamage: 0
 --- !u!114 &238566758264778636
 MonoBehaviour:
@@ -431,7 +429,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c374bdae6c0a3f24aa52f1bd429558c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_detectionAngle: 8
+  m_detectionAngle: 10
   m_detectionDistance: 100
   m_targetLayerMask:
     serializedVersion: 2

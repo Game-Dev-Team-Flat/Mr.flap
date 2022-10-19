@@ -55,7 +55,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   holdingTime: 3
-  explosionRadius: 3
+  explosionRadius: 6
   explosionDamage: 40
 --- !u!114 &6121068488469279127
 MonoBehaviour:
@@ -69,13 +69,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2be02699e1fb6c44e8739659247a68f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ignoreLayerMask:
-    serializedVersion: 2
-    m_Bits: 0
+  gunUsingThis: {fileID: 0}
   isUseGravity: 0
   gravityDownForce: 0
   moveSpeed: 100
-  damage: 0
 --- !u!65 &-4600760458500590267
 BoxCollider:
   m_ObjectHideFlags: 0

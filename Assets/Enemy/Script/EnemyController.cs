@@ -295,9 +295,9 @@ namespace Enemy
 
         protected bool IsGroggy()
         {
-            enemyInfo.effect.stun -= Time.deltaTime;
+            enemyInfo.effect.Stun -= Time.deltaTime;
 
-            return enemyInfo.effect.stun > 0;
+            return enemyInfo.effect.Stun > 0;
         }
     }
 }

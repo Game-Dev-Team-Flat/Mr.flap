@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
+    private Image background;
+    [SerializeField]
     private float gravityScale;
     private CharacterController m_characterController;
+    private PlayerInfo m_playerInfo;
     private CharacterController characterController
     {
         get
@@ -18,7 +22,6 @@ public class PlayerController : MonoBehaviour
             return m_characterController;
         }
     }
-    private PlayerInfo m_playerInfo;
     private PlayerInfo playerInfo
     {
         get
@@ -199,6 +202,8 @@ public class PlayerController : MonoBehaviour
             extraCharacterVelocity.y = extraCharacterVelocityY;
             characterController.Move(extraCharacterVelocity * Time.deltaTime);
         }
+
+        HitAnimation();
     }
 
 
@@ -469,6 +474,17 @@ public class PlayerController : MonoBehaviour
         }
         isChopDrive = false;
         Debug.Log("Reload ChopDriver");
+    }
+
+    private void HitAnimation()
+    {
+        if (playerInfo.isHit)
+        {
+            background.color = new Color(background.color.r, background.color.g, background.color.b, 25f / 256f);
+            playerInfo.isHit = false;
+        }
+
+        background.color = new Color(background.color.r, background.color.g, background.color.b, Mathf.Clamp01(background.color.a - Time.deltaTime / 10f));
     }
 
     private void ResetToNormalState()

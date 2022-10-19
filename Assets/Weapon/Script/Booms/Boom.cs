@@ -28,7 +28,7 @@ namespace Item.Weapon
             RaycastHit[] objectsHit = Physics.SphereCastAll(transform.position, explosionRadius, Vector3.up, 0f, (~LayerMask.GetMask("Floor") | ~Physics.IgnoreRaycastLayer) & targetLayerMask);
             foreach (RaycastHit objectHit in objectsHit)
             {
-                if (Physics.Raycast(transform.position, (objectHit.transform.position - transform.position).normalized, float.MaxValue, LayerMask.GetMask("Floor")))
+                if (Physics.Raycast(transform.position, (objectHit.transform.position - transform.position).normalized, (objectHit.transform.position - transform.position).magnitude, LayerMask.GetMask("Floor")))
                 {
                     continue;
                 }

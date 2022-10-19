@@ -5359,7 +5359,6 @@ MonoBehaviour:
   - item: {fileID: 5545854035031928090}
   maxHp: 100
   m_currentHp: 100
-  hpReduceRate: 10
   takenDamage: 0
   currentBossPage: 0
   bossHpBar: {fileID: 0}

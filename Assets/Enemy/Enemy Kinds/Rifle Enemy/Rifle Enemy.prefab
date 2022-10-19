@@ -354,7 +354,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7728480539391315058}
   - component: {fileID: 6165396992530092499}
-  - component: {fileID: 7728480539391315064}
+  - component: {fileID: 3769253548768970284}
   - component: {fileID: 7728480539391315063}
   - component: {fileID: 5447617308865376376}
   - component: {fileID: 7728480539391315065}
@@ -400,7 +400,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7728480539391315064
+--- !u!114 &3769253548768970284
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -409,15 +409,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 7728480539391315055}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 563e4716c4e74844aa515abd0f877bff, type: 3}
+  m_Script: {fileID: 11500000, guid: 7c24bea6193d74e468adae2895bdeabb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_inventory:
   - item: {fileID: 9191381450651346452}
-    ammoCount: 0
   maxHp: 50
   m_currentHp: 50
-  hpReduceRate: 10
   takenDamage: 0
 --- !u!114 &7728480539391315063
 MonoBehaviour:

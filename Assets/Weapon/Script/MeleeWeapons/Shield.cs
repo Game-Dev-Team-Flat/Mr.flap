@@ -48,7 +48,7 @@ namespace Item.Weapon
 
         private void GrantStun(Transform grantedTransform)
         {
-            grantedTransform.GetComponent<EntityInfo>().effect.stun = stunDuration;
+            grantedTransform.GetComponent<EntityInfo>().effect.Stun = stunDuration;
         }
 
         private Vector3 Push(Vector3 targetPosition)

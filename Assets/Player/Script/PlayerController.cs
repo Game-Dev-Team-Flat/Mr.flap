@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField]
+    private Image effectImage;
     [SerializeField]
     private float gravityScale;
     private CharacterController m_characterController;
@@ -199,6 +202,8 @@ public class PlayerController : MonoBehaviour
             extraCharacterVelocity.y = extraCharacterVelocityY;
             characterController.Move(extraCharacterVelocity * Time.deltaTime);
         }
+
+        HitEffect();
     }
 
 
@@ -291,7 +296,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetMouseButtonDown(1) && isHookShotReload && isUseHookShoot)
         {
             mouseRay = playerCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(mouseRay, out hitCollider, hookShotLimitMaxDistance, LayerMask.GetMask("Floor")))
+            if (Physics.Raycast(mouseRay, out hitCollider, hookShotLimitMaxDistance, LayerMask.GetMask("Floor") | LayerMask.GetMask("Enemy")))
             {
                 isHookShotReload = false;
                 hookshotSize = 0f;
@@ -454,7 +459,7 @@ public class PlayerController : MonoBehaviour
         foreach (RaycastHit hitEnemy in hitEnemies)
         {
             EntityInfo enemyInfo = hitEnemy.transform.GetComponent<EntityInfo>();
-            enemyInfo.effect.stun = chopDriverStunTime;
+            enemyInfo.effect.Stun = chopDriverStunTime;
             enemyInfo.takenDamage = chopDriverDamage;
         }
     }
@@ -477,10 +482,21 @@ public class PlayerController : MonoBehaviour
         state = State.Normal;
     }
 
+    private void HitEffect()
+    {
+        if (playerInfo.isHit)
+        {
+            effectImage.color = new Color(effectImage.color.r, effectImage.color.g, effectImage.color.b, 24f / 256f);
+            playerInfo.isHit = false;
+        }
+
+        effectImage.color = new Color(effectImage.color.r, effectImage.color.g, effectImage.color.b, Mathf.Clamp01(effectImage.color.a - (Time.deltaTime / 10f)));
+    }
+
     private bool IsGroggy()
     {
-        playerInfo.effect.stun -= Time.deltaTime;
+        playerInfo.effect.Stun -= Time.deltaTime;
 
-        return playerInfo.effect.stun > 0;
+        return playerInfo.effect.Stun > 0;
     }
 }

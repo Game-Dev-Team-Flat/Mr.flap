@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BossInfo : EntityInfo
+public class BossInfo : EnemyInfo
 {
     public BossPage currentBossPage = BossPage.Page1;
     [SerializeField]

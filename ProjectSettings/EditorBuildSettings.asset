@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/PostProcessing Test.unity
+    guid: 68daf22951158eb42a190437c55fd969
   m_configObjects: {}
